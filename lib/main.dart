@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'Pages/accounts_page.dart';
 import 'Pages/records_page.dart';
+import 'Pages/categories_page.dart';
 
 void main() {
   runApp(const MaterialApp(home: BudgetApp()));
@@ -23,9 +24,10 @@ class _BudgetAppState extends State<BudgetApp> {
     const Accounts(),
     const Records(), //Center(child: Text('Records Page', style: TextStyle(fontSize: 24))),
     const Center(child: Text('Analysis Page', style: TextStyle(fontSize: 24))),
-    const Center(
-      child: Text('Categories Page', style: TextStyle(fontSize: 24)),
-    ),
+    const Categories(),
+    // const Center(
+    //   child: Text('Categories Page', style: TextStyle(fontSize: 24)),
+    // ),
   ];
 
   @override

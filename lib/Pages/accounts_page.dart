@@ -6,76 +6,6 @@ class AccountCard extends StatelessWidget {
   final Account account;
 
   const AccountCard({super.key, required this.account});
-  // @override
-  // Widget build(BuildContext context) {
-  //   // Determine color based on balance (e.g., red for negative balance)
-  //   final Color balanceColor = account.balance >= 0
-  //       ? const Color.fromARGB(255, 55, 57, 56)
-  //       : const Color.fromARGB(255, 243, 80, 80);
-
-  //   // Determine the color for the background based on the balance sign
-  //   final Color cardColor = account.balance >= 0
-  //       ? Colors.white
-  //       : const Color.fromARGB(255, 254, 196, 205);
-
-  //   return Card(
-  //     // Make the card more apparent with higher elevation (shadow)
-  //     elevation: 4.0,
-  //     // Give it a nice rounded corner shape and colored border
-  //     shape: RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.circular(10.0),
-  //       side: BorderSide(color: balanceColor.withOpacity(0.5), width: 1.5),
-  //     ),
-  //     // Set the background color
-  //     color: cardColor,
-
-  //     child: ListTile(
-  //       contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-
-  //       // Icon (Left Side) - Make it more prominent
-  //       leading: Container(
-  //         padding: const EdgeInsets.all(8),
-  //         decoration: BoxDecoration(
-  //           color: balanceColor.withOpacity(
-  //             0.1,
-  //           ), // Subtle background for the icon
-  //           borderRadius: BorderRadius.circular(8),
-  //         ),
-  //         child: account.iconWidget, // The icon itself
-  //       ),
-
-  //       // Title (Center)
-  //       title: Text(
-  //         account.name,
-  //         style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-  //       ),
-
-  //       // Trailing (Right Side) - Make the balance stand out
-  //       trailing: Column(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         crossAxisAlignment: CrossAxisAlignment.end,
-  //         children: [
-  //           const Text(
-  //             'Current Balance',
-  //             style: TextStyle(fontSize: 12, color: Colors.grey),
-  //           ),
-  //           Text(
-  //             '₹${account.balance.toStringAsFixed(2)}',
-  //             style: TextStyle(
-  //               fontSize: 18,
-  //               fontWeight: FontWeight.bold,
-  //               color: balanceColor, // Color code the balance text
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-
-  //       onTap: () {
-  //         // Add navigation logic to Account Details page here
-  //       },
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -136,13 +66,6 @@ class _AccountsState extends State<Accounts> {
     }
   }
 
-  // List<Map<String, dynamic>> accs=getAllAccounts();
-  // //later I will add database input instead
-  // List<Account> accounts = [
-  //   Account(id: 1, name: "Cash", balance: 1500.0, iconCode: 57408),
-  //   Account(id: 2, name: "Bank", balance: 3000.0, iconCode: 57408),
-  //   Account(id: 3, name: "Savings", balance: 1549.25, iconCode: 57408),
-  // ];
   double _balance() {
     double sum = 0;
     for (var i = 0; i < accounts.length; i++) {

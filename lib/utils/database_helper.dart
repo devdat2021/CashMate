@@ -82,6 +82,28 @@ class DatabaseHelper {
     return await db.query('accounts');
   }
 
+  /// R: Queries only categories marked as 'income'.
+  Future<List<Map<String, dynamic>>> getIncomeCategories() async {
+    Database db = await instance.database;
+    return await db.query(
+      'categories',
+      where: 'type = ?', // The SQL WHERE clause
+      whereArgs: ['income'], // The value to match
+      orderBy: 'name ASC',
+    );
+  }
+
+  /// R: Queries only categories marked as 'expense'.
+  Future<List<Map<String, dynamic>>> getExpenseCategories() async {
+    Database db = await instance.database;
+    return await db.query(
+      'categories',
+      where: 'type = ?', // The SQL WHERE clause
+      whereArgs: ['expense'], // The value to match
+      orderBy: 'name ASC',
+    );
+  }
+
   //Fetch all transactions
   Future<List<Map<String, dynamic>>> getAllTransactions() async {
     Database db = await instance.database;
