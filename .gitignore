@@ -33,6 +33,12 @@ migrate_working_dir/
 .pub/
 /build/
 
+# Ignore desktop platform builds
+linux/
+macos/
+windows/
+
+
 # Symbolication related
 app.*.symbols
 
