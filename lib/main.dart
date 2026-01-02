@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'Pages/accounts_page.dart';
 import 'Pages/records_page.dart';
 import 'Pages/categories_page.dart';
+import 'Pages/transaction_page.dart';
 
 void main() {
   runApp(const MaterialApp(home: BudgetApp()));
@@ -19,15 +20,12 @@ class _BudgetAppState extends State<BudgetApp> {
   // 0-Accounts, 1-Records, 2-Analysis, 3-Categories
   int currentIndex = 0;
 
-  // List of Widgets for the different screens/tabs
+  // List of Widgets pages for the different screens/tabs
   final List<Widget> _pages = [
     const Accounts(),
     const Records(), //Center(child: Text('Records Page', style: TextStyle(fontSize: 24))),
     const Center(child: Text('Analysis Page', style: TextStyle(fontSize: 24))),
     const Categories(),
-    // const Center(
-    //   child: Text('Categories Page', style: TextStyle(fontSize: 24)),
-    // ),
   ];
 
   @override
@@ -38,18 +36,29 @@ class _BudgetAppState extends State<BudgetApp> {
           'CashMate',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        // Note: Using a fixed, opaque Color is generally better than Color.fromARGB(199, ...)
-        backgroundColor: const Color.fromARGB(
-          255,
-          17,
-          192,
-          219,
-        ), // A fixed color close to your original
+
+        backgroundColor: const Color.fromARGB(255, 17, 192, 219),
       ),
 
       //Displays the current page based on currentIndex
       body: _pages[currentIndex],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          // Navigate to Add Page
+          final bool? result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddTransactionPage()),
+          );
 
+          // If result is true, it means we saved something. Refresh the list!
+          if (result == true) {
+            // Call your load function here, e.g., _loadTransactions();
+            // (Make sure _loadTransactions is public or accessible)
+          }
+        },
+        backgroundColor: const Color.fromARGB(255, 17, 192, 219),
+        child: const Icon(Icons.add),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromARGB(255, 17, 192, 219),
 
@@ -79,7 +88,7 @@ class _BudgetAppState extends State<BudgetApp> {
           ),
         ],
 
-        // Optional: Set type to fixed to show all labels consistently
+        //type as fixed to show all labels consistently
         type: BottomNavigationBarType.fixed,
         // Set colors for better visibility
         selectedItemColor: const Color.fromARGB(255, 116, 115, 115),
