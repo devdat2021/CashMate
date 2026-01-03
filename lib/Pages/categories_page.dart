@@ -2,69 +2,30 @@ import 'package:budget/models/category.dart';
 import 'package:flutter/material.dart';
 import 'package:budget/utils/database_helper.dart';
 
-// class AddCategoryDialog extends StatefulWidget {
-//   const AddCategoryDialog({super.key});
+class Category_card extends StatelessWidget {
+  final Category cat;
+  const Category_card({super.key, required this.cat});
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      child: ListTile(
+        leading: cat.iconWidget,
+        title: Text(cat.name, style: const TextStyle(fontSize: 18)),
 
-//   @override
-//   State<AddCategoryDialog> createState() => _AddCategoryDialogState();
-// }
-
-// class _AddCategoryDialogState extends State<AddCategoryDialog> {
-//   String type = 'expense';
-//   // Define controllers for the input fields
-//   final TextEditingController nameController = TextEditingController();
-//   // final TextEditingController initialBalanceController =TextEditingController();
-//   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return AlertDialog(
-//       title: const Text('Add New Category'),
-//       content: Column(
-//         mainAxisSize: MainAxisSize.min,
-//         children: [
-//           TextFormField(
-//             controller: nameController,
-//             decoration: const InputDecoration(labelText: 'Category Name'),
-//             validator: (value) {
-//               if (value == null || value.isEmpty) {
-//                 return 'Please enter a name.';
-//               }
-//               return null;
-//             },
-//           ),
-//           const SizedBox(height: 16),
-//           const Text('Type'),
-//           const SizedBox(height: 5),
-//           SegmentedButton<String>(
-//             segments: const [
-//               ButtonSegment(value: 'expense', label: Text('Expense')),
-//               ButtonSegment(value: 'income', label: Text('Income')),
-//             ],
-//             selected: {type},
-//             onSelectionChanged: (newSelection) {
-//               setState(() {
-//                 type = newSelection.first;
-//               });
-//             },
-//           ),
-//         ],
-//       ),
-//       actions: [
-//         TextButton(
-//           onPressed: () => Navigator.pop(context),
-//           child: const Text('Cancel'),
-//         ),
-//         ElevatedButton(
-//           onPressed: () {
-//             Navigator.pop(context, type); // return selected type
-//           },
-//           child: const Text('Save'),
-//         ),
-//       ],
-//     );
-//   }
-// }
+        trailing: cat.budget == 0.0
+            ? null
+            : Text(
+                '₹${cat.budget.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+      ),
+    );
+  }
+}
 
 class Categories extends StatefulWidget {
   const Categories({super.key});
@@ -85,139 +46,101 @@ class _CategoriesState extends State<Categories> {
     _loadAccounts(); // Start loading data when the widget is created
   }
 
-  // void _showAddCategoryDialog() async {
-  //   final selectedType = await showDialog<String>(
-  //     context: context,
-  //     builder: (_) => const AddCategoryDialog(),
-  //   );
-
-  //   if (selectedType != null) {
-  //     setState(() {
-  //       type = selectedType;
-  //     });
-  //   }
-  // }
-
   void _showAddCategoryDialog() {
-    // Define controllers for the input fields
     final TextEditingController nameController = TextEditingController();
-    // final TextEditingController initialBalanceController =TextEditingController();
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+    type = 'expense';
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add New Category'),
-          content: Form(
-            //Form for easy validation
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min, //To keep the dialog compact
-              children: <Widget>[
-                // Account Name Input
-                TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Category Name'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a name.';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                const Text('Type'), const SizedBox(height: 5),
-                SegmentedButton<String>(
-                  segments: const <ButtonSegment<String>>[
-                    ButtonSegment(value: 'expense', label: Text('Expense')),
-                    ButtonSegment(value: 'income', label: Text('Income')),
+        // 1. Wrap the AlertDialog in a StatefulBuilder
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Add New Category'),
+              content: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    TextFormField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Category Name',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a name.';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    const Text('Type'),
+                    const SizedBox(height: 5),
+                    SegmentedButton<String>(
+                      segments: const <ButtonSegment<String>>[
+                        ButtonSegment(value: 'expense', label: Text('Expense')),
+                        ButtonSegment(value: 'income', label: Text('Income')),
+                      ],
+                      selected: {type},
+                      onSelectionChanged: (Set<String> newSelection) {
+                        setDialogState(() {
+                          type = newSelection.first;
+                        });
+                      },
+                    ),
                   ],
-                  selected: {type},
-                  // onSelectionChanged: (newSelection) {
-                  //   dialogSetState(() {
-                  //     // ✅ THIS rebuilds the dialog
-                  //     type = newSelection.first;
-                  //   });
-                  // },
-                  onSelectionChanged: (Set<String> newSelection) {
-                    setState(() {
-                      type = newSelection.first;
-                    });
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
                   },
                 ),
-                // Initial Balance Input
-                // TextFormField(
-                //   controller: initialBalanceController,
-                //   decoration: const InputDecoration(
-                //     labelText: 'Initial Balance',
-                //   ),
-                //   keyboardType: TextInputType.number, // Ensure numeric input
-                //   validator: (value) {
-                //     if (value == null || double.tryParse(value) == null) {
-                //       return 'Please enter a valid number.';
-                //     }
-                //     return null;
-                //   },
-                // ),
+                ElevatedButton(
+                  child: const Text('Save'),
+                  onPressed: () {
+                    if (formKey.currentState!.validate()) {
+                      final String name = nameController.text;
+                      final String catType = type;
+
+                      setState(() {
+                        if (catType == "expense") {
+                          _expenseCategories.add(
+                            Category(
+                              name: name,
+                              iconCode: Icons.monetization_on_rounded.codePoint,
+                              type: catType,
+                            ),
+                          );
+                          DatabaseHelper.instance.insertCategory(
+                            _expenseCategories.last.toMap(),
+                          );
+                        } else if (catType == "income") {
+                          _incomeCategories.add(
+                            Category(
+                              name: name,
+                              iconCode: Icons.monetization_on_rounded.codePoint,
+                              type: catType,
+                            ),
+                          );
+                          DatabaseHelper.instance.insertCategory(
+                            _incomeCategories.last.toMap(),
+                          );
+                        }
+                      });
+
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
               ],
-            ),
-          ),
-          actions: <Widget>[
-            // Cancel Button
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-            // Save Button
-            ElevatedButton(
-              child: const Text('Save'),
-              onPressed: () {
-                if (formKey.currentState!.validate()) {
-                  // 1. Get validated values
-                  final String name = nameController.text;
-                  final String Cat_type = type;
-                  // final double balance = double.parse(
-                  //   initialBalanceController.text,
-                  // );
-
-                  // 2. Call your database logic (e.g., _saveNewAccount)
-                  // _saveNewAccount(name, balance);
-                  setState(() {
-                    if (type == "expense") {
-                      _expenseCategories.add(
-                        Category(
-                          name: name,
-                          iconCode: Icons.monetization_on_rounded.codePoint,
-                          type: Cat_type,
-                        ),
-                      );
-                      DatabaseHelper.instance.insertAccount(
-                        _expenseCategories.last.toMap(),
-                      );
-                    }
-                    if (type == "income") {
-                      _expenseCategories.add(
-                        Category(
-                          name: name,
-                          iconCode: Icons.monetization_on_rounded.codePoint,
-                          type: Cat_type,
-                        ),
-                      );
-                      DatabaseHelper.instance.insertAccount(
-                        _expenseCategories.last.toMap(),
-                      );
-                    }
-                  });
-
-                  // 3. Close the dialog
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -292,6 +215,80 @@ class _CategoriesState extends State<Categories> {
       );
     }
 
-    return Column();
+    return Column(
+      crossAxisAlignment:
+          CrossAxisAlignment.stretch, // Makes cards span the width
+      children: [
+        const SizedBox(height: 20),
+        const Text(
+          "\t\t\tIncome",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ), // Spacer
+
+        const Divider(
+          color: Colors.grey, // Color of the line
+          thickness: 1, // How thick the line is
+          indent: 20, // Space from the left edge
+          endIndent: 20, // Space from the right edge
+          height:
+              10, // Total vertical space the divider takes up (padding top + bottom)
+        ),
+        Expanded(
+          child: ListView(
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _incomeCategories.length,
+                itemBuilder: (context, index) {
+                  return Category_card(cat: _incomeCategories[index]);
+                },
+              ),
+              const SizedBox(height: 15),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        const Text(
+          "\t\t\tExpense",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ), // Spacer
+        const Divider(
+          color: Colors.grey, // Color of the line
+          thickness: 1, // How thick the line is
+          indent: 20, // Space from the left edge
+          endIndent: 20, // Space from the right edge
+          height:
+              10, // Total vertical space the divider takes up (padding top + bottom)
+        ),
+        Expanded(
+          child: ListView(
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _expenseCategories.length,
+                itemBuilder: (context, index) {
+                  return Category_card(cat: _expenseCategories[index]);
+                },
+              ),
+              const SizedBox(height: 15),
+            ],
+          ),
+        ),
+        Center(
+          child: FloatingActionButton.extended(
+            onPressed: () => _showAddCategoryDialog(),
+            label: const Text(
+              'Add Category',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            icon: const Icon(Icons.add_circle_outline),
+            backgroundColor: const Color.fromARGB(255, 91, 246, 189),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
   }
 }

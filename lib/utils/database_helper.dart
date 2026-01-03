@@ -82,6 +82,12 @@ class DatabaseHelper {
     return await db.query('accounts');
   }
 
+  //Insert a new account
+  Future<int> insertCategory(Map<String, dynamic> category) async {
+    Database db = await instance.database;
+    return await db.insert('categories', category);
+  }
+
   /// R: Queries only categories marked as 'income'.
   Future<List<Map<String, dynamic>>> getIncomeCategories() async {
     Database db = await instance.database;
