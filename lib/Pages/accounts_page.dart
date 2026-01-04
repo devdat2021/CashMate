@@ -33,11 +33,13 @@ class Accounts extends StatefulWidget {
 class _AccountsState extends State<Accounts> {
   List<Account> accounts = [];
   bool _isLoading = true; //data loading verification
+  Map<String, double> _totals = {'income': 0.0, 'expense': 0.0};
 
   @override
   void initState() {
     super.initState();
     _loadAccounts(); // Start loading data when the widget is created
+    _loadTotals();
   }
 
   //fetching data from the database
@@ -72,6 +74,13 @@ class _AccountsState extends State<Accounts> {
       sum += accounts[i].balance;
     }
     return sum;
+  }
+
+  void _loadTotals() async {
+    final totals = await DatabaseHelper.instance.getTotals();
+    setState(() {
+      _totals = totals;
+    });
   }
 
   void _showAddAccountDialog() {
@@ -224,7 +233,7 @@ class _AccountsState extends State<Accounts> {
                     // 1. Expense Widget
                     Expanded(
                       child: Column(
-                        children: const [
+                        children: [
                           Text(
                             'Total Expense',
                             style: TextStyle(
@@ -233,7 +242,7 @@ class _AccountsState extends State<Accounts> {
                             ),
                           ),
                           Text(
-                            '-₹980.50',
+                            '₹${_totals['expense']}',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -247,7 +256,7 @@ class _AccountsState extends State<Accounts> {
                     // 2. Income Widget
                     Expanded(
                       child: Column(
-                        children: const [
+                        children: [
                           Text(
                             'Total Income',
                             style: TextStyle(
@@ -256,7 +265,7 @@ class _AccountsState extends State<Accounts> {
                             ),
                           ),
                           Text(
-                            '+₹1,200.00',
+                            '₹${_totals['income']}',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,

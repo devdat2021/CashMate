@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:budget/models/transaction.dart';
+import 'package:budget/utils/database_helper.dart';
 //import 'package:budget/utils/database_helper.dart';
 
 class Records extends StatefulWidget {
@@ -10,7 +11,22 @@ class Records extends StatefulWidget {
 }
 
 class _RecordsState extends State<Records> {
+  Map<String, double> _totals = {'income': 0.0, 'expense': 0.0};
   List<Transaction> transactions = [];
+
+  void _loadTotals() async {
+    final totals = await DatabaseHelper.instance.getMonthlyTotals();
+    setState(() {
+      _totals = totals;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTotals();
+  }
+
   @override
   Widget build(BuildContext context) {
     // Use a Column as the root container for the whole page
@@ -52,12 +68,12 @@ class _RecordsState extends State<Records> {
                               "Expense",
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.grey,
+                                color: Color.fromARGB(255, 49, 47, 47),
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '₹500',
+                              '₹${_totals['expense']}',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -85,12 +101,12 @@ class _RecordsState extends State<Records> {
                               "Income",
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.grey,
+                                color: Color.fromARGB(255, 49, 47, 47),
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '₹1000',
+                              '₹${_totals['income']}',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,

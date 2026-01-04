@@ -1,14 +1,10 @@
-// lib/utils/database_helper.dart
-
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
-  static Database?
-  _database; // Private variable to hold the actual database connection
+  static Database? _database; //variable to hold the actual database connection
 
-  // Private constructor to enforce the singleton pattern
   DatabaseHelper._privateConstructor();
 
   // Getter for the database. Initializes it if it's null.
@@ -130,19 +126,70 @@ class DatabaseHelper {
     double balanceChange = (type == 'expense') ? -amount : amount;
 
     return await db.transaction((txn) async {
-      // 1. Insert the Transaction
       int transactionId = await txn.insert('transactions', transactionData);
 
-      // 2. Update the Account Balance
-      // We use the calculated balanceChange (+ for income, - for expense)
       await txn.rawUpdate(
         'UPDATE accounts SET current_balance = current_balance + ? WHERE id = ?',
         [balanceChange, accountId],
       );
 
-      // Return the new ID
       return transactionId;
     });
+  }
+
+  //to calculate total income and expense throughout
+  Future<Map<String, double>> getTotals() async {
+    final db = await instance.database;
+
+    final result = await db.rawQuery('''
+    SELECT 
+      SUM(CASE WHEN transaction_type = 'income' THEN amount ELSE 0 END) as income,
+      SUM(CASE WHEN transaction_type = 'expense' THEN amount ELSE 0 END) as expense
+    FROM transactions
+  ''');
+
+    final row = result.first;
+
+    return {
+      'income': (row['income'] as num?)?.toDouble() ?? 0.0,
+      'expense': (row['expense'] as num?)?.toDouble() ?? 0.0,
+    };
+  }
+
+  Future<Map<String, double>> getMonthlyTotals() async {
+    final db = await instance.database;
+    final now = DateTime.now();
+
+    //This was AI logic not mine but simple
+    final startOfMonth = DateTime(
+      now.year,
+      now.month,
+      1,
+    ).millisecondsSinceEpoch;
+
+    final endOfMonth = DateTime(
+      now.year,
+      now.month + 1,
+      1,
+    ).millisecondsSinceEpoch;
+
+    final result = await db.rawQuery(
+      '''
+    SELECT 
+      SUM(CASE WHEN transaction_type = 'income' THEN amount ELSE 0 END) as income,
+      SUM(CASE WHEN transaction_type = 'expense' THEN amount ELSE 0 END) as expense
+    FROM transactions
+    WHERE date >= ? AND date < ?
+  ''',
+      [startOfMonth, endOfMonth],
+    );
+
+    final row = result.first;
+
+    return {
+      'income': (row['income'] as num?)?.toDouble() ?? 0.0,
+      'expense': (row['expense'] as num?)?.toDouble() ?? 0.0,
+    };
   }
 
   // You can remove the generic insert/queryAll methods now that you have specific ones.

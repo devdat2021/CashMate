@@ -6,6 +6,7 @@ class Account {
   final double balance;
   final int iconCode;
 
+
   Account({
     this.id,
     required this.name,
