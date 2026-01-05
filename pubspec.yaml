@@ -33,6 +33,7 @@ dependencies:
     sdk: flutter
   sqflite: ^2.3.0 # The SQLite plugin for Flutter
   path_provider: ^2.1.1 # Helps find the correct path on the device
+  intl: ^0.18.0
   path: ^1.8.3
 
   # The following adds the Cupertino Icons font to your application.

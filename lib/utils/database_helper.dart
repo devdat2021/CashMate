@@ -192,6 +192,21 @@ class DatabaseHelper {
     };
   }
 
+  Future<Map<String, dynamic>?> getCategoryInfo(int id) async {
+    Database db = await instance.database;
+    final results = await db.query(
+      'categories',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+
+    if (results.isNotEmpty) {
+      return results.first;
+    } else {
+      return null;
+    }
+  }
+
   // You can remove the generic insert/queryAll methods now that you have specific ones.
   // Future<int> insert(String table, Map<String, dynamic> row) async { ... }
   // Future<List<Map<String, dynamic>>> queryAll(String table) async { ... }

@@ -1,11 +1,3 @@
-// // --- Data Model ---
-// class Transaction {
-//   double amount;
-//   String type, category; //type- expense/income/transfer
-//   DateTime date;
-//   Transaction(this.amount, this.type, this.category, this.date);
-// }
-
 class Transaction {
   int? id; // optional, for new transactions before DB insert
   double amount;

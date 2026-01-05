@@ -1,14 +1,3 @@
-// import 'package:flutter/material.dart';
-
-// class Transact extends StatelessWidget {
-//   const Transact({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Placeholder();
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:budget/utils/database_helper.dart';
 import 'package:budget/models/account.dart';
@@ -134,16 +123,12 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     );
 
     if (mounted) {
-      Navigator.pop(
-        context,
-        true,
-      ); // Return "true" so the previous page knows to refresh
+      Navigator.pop(context, true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Simple Toggle Button Style
     final isExpense = _transactionType == 'expense';
 
     return Scaffold(
@@ -191,7 +176,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // 3. Date Picker
+                  //Date Picker
                   ListTile(
                     title: Text(
                       "Date: ${_selectedDate.toLocal().toString().split(' ')[0]}",
@@ -205,7 +190,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // 4. Account Dropdown
+                  //Account Dropdown
                   DropdownButtonFormField<Account>(
                     value: _selectedAccount,
                     decoration: const InputDecoration(
@@ -226,7 +211,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // 5. Category Dropdown
+                  //Category Dropdown
                   DropdownButtonFormField<Category>(
                     value: _selectedCategory,
                     decoration: const InputDecoration(
@@ -238,7 +223,6 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                         value: category,
                         child: Row(
                           children: [
-                            // Simple check to ensure we don't crash if iconCode is missing
                             Icon(
                               IconData(
                                 category.iconCode,

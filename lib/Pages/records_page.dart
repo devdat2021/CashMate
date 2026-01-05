@@ -1,7 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:budget/models/transaction.dart';
+import 'package:budget/models/category.dart';
 import 'package:budget/utils/database_helper.dart';
-//import 'package:budget/utils/database_helper.dart';
+import 'package:intl/intl.dart';
+
+//Some errors to fix
+// class Transaction_card extends StatelessWidget {
+//   final Transaction transaction;
+
+//   const Transaction_card({super.key,required this.transaction});
+//   void _loadCategory() async {
+
+//   final catData = await DatabaseHelper.instance.getCategoryInfo(transaction.categoryId??0);
+
+//   if (catData != null) {
+//     final cat_name=catData['name'];
+//     final cat_icon=catData['icon_code'];
+
+//   }
+// }
+//   @override
+//   Widget build(BuildContext context) {
+//     final formattedDate = DateFormat('MMM d, h:mm a').format(transaction.date);
+//    return Card(
+//       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+//       child: ListTile(
+//         leading: transaction.iconWidget,
+//         title: Text(account.name, style: const TextStyle(fontSize: 18)),
+//         trailing: Text(
+//           '₹${transaction.amount.toStringAsFixed(2)}',
+//           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class Records extends StatefulWidget {
   const Records({super.key});
