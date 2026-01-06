@@ -1,40 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:budget/models/transaction.dart';
-import 'package:budget/models/category.dart';
 import 'package:budget/utils/database_helper.dart';
 import 'package:intl/intl.dart';
 
 //Some errors to fix
-// class Transaction_card extends StatelessWidget {
-//   final Transaction transaction;
+class Transaction_card extends StatelessWidget {
+  final Transaction transaction;
 
-//   const Transaction_card({super.key,required this.transaction});
-//   void _loadCategory() async {
+  const Transaction_card({super.key, required this.transaction});
 
-//   final catData = await DatabaseHelper.instance.getCategoryInfo(transaction.categoryId??0);
-
-//   if (catData != null) {
-//     final cat_name=catData['name'];
-//     final cat_icon=catData['icon_code'];
-
-//   }
-// }
-//   @override
-//   Widget build(BuildContext context) {
-//     final formattedDate = DateFormat('MMM d, h:mm a').format(transaction.date);
-//    return Card(
-//       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-//       child: ListTile(
-//         leading: transaction.iconWidget,
-//         title: Text(account.name, style: const TextStyle(fontSize: 18)),
-//         trailing: Text(
-//           '₹${transaction.amount.toStringAsFixed(2)}',
-//           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//         ),
-//       ),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    final isExpense = transaction.transactionType == 'expense';
+    final color = isExpense ? Colors.red : Colors.green;
+    final formattedDate = DateFormat('MMM d, h:mm a').format(transaction.date);
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: color.withValues(
+            alpha: 0.3,
+          ), // Light background circle
+          child: transaction.iconWidget,
+        ),
+        //leading:transaction.iconWidget ?? Icon(IconData(59473, fontFamily: 'MaterialIcons')),
+        title: Text(
+          transaction.categoryName,
+          style: const TextStyle(fontSize: 18),
+        ),
+        subtitle: Text(
+          formattedDate,
+          style: const TextStyle(fontSize: 12, color: Colors.grey),
+        ),
+        trailing: Text(
+          '₹${transaction.amount.toStringAsFixed(2)}',
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+}
 
 class Records extends StatefulWidget {
   const Records({super.key});
@@ -46,6 +51,7 @@ class Records extends StatefulWidget {
 class _RecordsState extends State<Records> {
   Map<String, double> _totals = {'income': 0.0, 'expense': 0.0};
   List<Transaction> transactions = [];
+  bool _isLoading = true;
 
   void _loadTotals() async {
     final totals = await DatabaseHelper.instance.getMonthlyTotals();
@@ -54,10 +60,33 @@ class _RecordsState extends State<Records> {
     });
   }
 
+  void _loadTransactions() async {
+    try {
+      List<Map<String, dynamic>> raw_transactions = await DatabaseHelper
+          .instance
+          .getAllTransactions();
+      List<Transaction> loadedAccounts = raw_transactions.map((map) {
+        return Transaction.fromMap(map);
+      }).toList();
+
+      setState(() {
+        transactions = loadedAccounts;
+        _isLoading = false;
+      });
+    } catch (e) {
+      // Crucial: Print any database error to the console!
+      print("Database Loading Error: $e");
+      setState(() {
+        _isLoading = false; // Stop loading even if there's an error
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _loadTotals();
+    _loadTransactions();
   }
 
   @override
@@ -161,19 +190,15 @@ class _RecordsState extends State<Records> {
         // 2. SCROLLING TRANSACTION LIST
         // MUST use Expanded to tell the list to take the remaining height
         Expanded(
-          child: ListView.builder(
-            // itemCount will eventually be based on your transaction list size
-            itemCount: 5,
-            itemBuilder: (context, index) {
-              // This is where your date headers and transaction cards will go
-              return const ListTile(
-                title: Text(
-                  'Fuck bitches',
-                  style: TextStyle(fontWeight: FontWeight.w400),
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator()) // Show spinner
+              : ListView.builder(
+                  // itemCount will eventually be based on your transaction list size
+                  itemCount: transactions.length,
+                  itemBuilder: (context, index) {
+                    return Transaction_card(transaction: transactions[index]);
+                  },
                 ),
-              );
-            },
-          ),
         ),
       ],
     );

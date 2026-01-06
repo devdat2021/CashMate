@@ -106,10 +106,26 @@ class DatabaseHelper {
     );
   }
 
-  //Fetch all transactions
+  // //Fetch all transactions
+  // Future<List<Map<String, dynamic>>> getAllTransactions() async {
+  //   Database db = await instance.database;
+  //   return await db.query('transactions', orderBy: 'id DESC');
+  // }
   Future<List<Map<String, dynamic>>> getAllTransactions() async {
     Database db = await instance.database;
-    return await db.query('transactions', orderBy: 'id DESC');
+
+    // We select ALL transaction fields (t.*)
+    // AND specific category fields (c.name, c.iconCode)
+    // We use LEFT JOIN so that even if a transaction has NO category, it still shows up.
+    return await db.rawQuery('''
+    SELECT 
+      t.*, 
+      c.name AS category_name, 
+      c.icon_code AS category_icon
+    FROM transactions t
+    LEFT JOIN categories c ON t.category_id = c.id
+    ORDER BY t.date DESC
+  ''');
   }
 
   /// Inserts a transaction and updates the associated account's balance in one atomic operation.

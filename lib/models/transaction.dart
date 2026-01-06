@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Transaction {
   int? id; // optional, for new transactions before DB insert
   double amount;
@@ -7,7 +9,8 @@ class Transaction {
   int? categoryId;
   int? relatedTransactionId;
   DateTime date;
-
+  final String categoryName;
+  final int categoryIcon;
   Transaction({
     this.id,
     required this.amount,
@@ -17,6 +20,8 @@ class Transaction {
     this.note,
     this.categoryId,
     this.relatedTransactionId,
+    required this.categoryName,
+    required this.categoryIcon,
   });
 
   // Conversions
@@ -30,7 +35,12 @@ class Transaction {
       note: map['note'] as String?,
       categoryId: map['category_id'] as int?,
       relatedTransactionId: map['related_transaction_id'] as int?,
+      categoryName: map['category_name'],
+      categoryIcon: map['category_icon'],
     );
+  }
+  Icon get iconWidget {
+    return Icon(IconData(categoryIcon, fontFamily: 'MaterialIcons'));
   }
 
   Map<String, dynamic> toMap() {
