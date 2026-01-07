@@ -35,6 +35,7 @@ dependencies:
   path_provider: ^2.1.1 # Helps find the correct path on the device
   intl: ^0.18.0
   path: ^1.8.3
+  fl_chart: ^0.66.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

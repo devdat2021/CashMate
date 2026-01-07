@@ -34,11 +34,24 @@ class _BudgetAppState extends State<BudgetApp> {
       appBar: AppBar(
         title: const Text(
           'CashMate',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
-
-        backgroundColor: const Color.fromARGB(255, 17, 192, 219),
+        backgroundColor: Color.fromARGB(255, 17, 192, 219),
+        elevation: 0, // Removes shadow for a flat look
+        centerTitle: true, // Looks more balanced
+        // 2. ROUNDED SHAPE: Gives the header a modern feel
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
+        ),
       ),
+      // appBar: AppBar(
+      //   title: const Text(
+      //     'CashMate',
+      //     style: TextStyle(fontWeight: FontWeight.bold),
+      //   ),
+
+      //   backgroundColor: const Color.fromARGB(255, 17, 192, 219),
+      // ),
 
       //Displays the current page based on currentIndex
       body: _pages[currentIndex],
