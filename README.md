@@ -13,9 +13,9 @@ CashMate is a personal finance and budgeting application built with **Flutter**.
 * **Monthly Records:** View transaction history grouped by month.
 * **Local Storage:** All data is stored locally on the device using SQLite, ensuring privacy and offline access.
 
-## 📱 Screenshots
+<!--## 📱 Screenshots
 
-<!-- | Home / Accounts | Records List | Analysis & Charts | Add Transaction |
+ | Home / Accounts | Records List | Analysis & Charts | Add Transaction |
 |:---:|:---:|:---:|:---:|
 | *(Add screenshot)* | *(Add screenshot)* | *(Add screenshot)* | *(Add screenshot)* | -->
 
@@ -46,7 +46,24 @@ To run this project locally, you need to have **Flutter** installed on your mach
     ```bash
     flutter run
     ```
+4.  **Project structure:**
 
+```text
+lib/
+├── main.dart                  # Entry point & Navigation (Bottom Bar)
+├── models/
+│   ├── account.dart           # Account data model
+│   ├── category.dart          # Category data model
+│   └── transaction.dart       # Transaction data model
+├── Pages/
+│   ├── accounts_page.dart     # Accounts summary screen
+│   ├── analysis_page.dart     # Charts & spending breakdown
+│   ├── categories_page.dart   # Category management
+│   ├── records_page.dart      # Transaction history list
+│   └── transaction_page.dart  # "Add Transaction" screen
+└── utils/
+    └── database_helper.dart   # SQLite database operations
+```
 ## Future Plan
 
 - [ ] Add support for multiple currencies.
