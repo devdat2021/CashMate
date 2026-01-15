@@ -23,7 +23,7 @@ class _BudgetAppState extends State<BudgetApp> {
   // List of Widgets pages for the different screens/tabs
   final List<Widget> _pages = [
     const Accounts(),
-    const Records(), //Center(child: Text('Records Page', style: TextStyle(fontSize: 24))),
+    const Records(),
     const Center(child: Text('Analysis Page', style: TextStyle(fontSize: 24))),
     const Categories(),
   ];
@@ -32,14 +32,19 @@ class _BudgetAppState extends State<BudgetApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'CashMate',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        // title: const Text(
+        //   'CashMate',
+        //   style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        // ),
+        title: Image.asset(
+          'assets/Topbar_logo.png',
+          height: 40, // Adjust height to fit
+          fit: BoxFit.contain,
         ),
         backgroundColor: Color.fromARGB(255, 92, 108, 110),
-        elevation: 0, // Removes shadow for a flat look
-        centerTitle: true, // Looks more balanced
-        // 2. ROUNDED SHAPE: Gives the header a modern feel
+        elevation: 0,
+        centerTitle: true,
+
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
         ),
@@ -53,7 +58,6 @@ class _BudgetAppState extends State<BudgetApp> {
             MaterialPageRoute(builder: (context) => const AddTransactionPage()),
           );
 
-          // If result is true, it means we saved something. Refresh the list!
           if (result == true) {
             // Call your load function here, e.g., _loadTransactions();
             // (Make sure _loadTransactions is public or accessible)
@@ -90,10 +94,8 @@ class _BudgetAppState extends State<BudgetApp> {
             label: 'Categories',
           ),
         ],
-
-        //type as fixed to show all labels consistently
         type: BottomNavigationBarType.fixed,
-        // Set colors for better visibility
+
         selectedItemColor: const Color.fromARGB(255, 249, 206, 89),
         unselectedItemColor: const Color.fromARGB(255, 197, 183, 144),
       ),
