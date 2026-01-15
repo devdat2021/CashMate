@@ -43,7 +43,7 @@ class _CategoriesState extends State<Categories> {
   @override
   void initState() {
     super.initState();
-    _loadAccounts(); // Start loading data when the widget is created
+    _loadAccounts();
   }
 
   void _showAddCategoryDialog() {
@@ -54,7 +54,6 @@ class _CategoriesState extends State<Categories> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // 1. Wrap the AlertDialog in a StatefulBuilder
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
@@ -148,7 +147,6 @@ class _CategoriesState extends State<Categories> {
 
   void _loadAccounts() async {
     try {
-      //raw expense category
       List<Map<String, dynamic>> rawExpense = await DatabaseHelper.instance
           .getExpenseCategories();
 
@@ -163,7 +161,6 @@ class _CategoriesState extends State<Categories> {
         return Category.fromMap(map);
       }).toList();
 
-      // 3. Update the UI state
       setState(() {
         _incomeCategories = loadedinc;
         _expenseCategories = loadedexp;
@@ -172,7 +169,7 @@ class _CategoriesState extends State<Categories> {
     } catch (e) {
       print("Database Loading Error: $e"); //for debugging purpose :)
       setState(() {
-        _isLoading = false; // Stop loading even if there's an error
+        _isLoading = false;
       });
     }
   }
@@ -203,10 +200,13 @@ class _CategoriesState extends State<Categories> {
                 onPressed: () => _showAddCategoryDialog(),
                 label: const Text(
                   'Add Category',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Color.fromARGB(255, 92, 92, 92),
+                  ),
                 ),
                 icon: const Icon(Icons.add_circle_outline),
-                backgroundColor: const Color.fromARGB(255, 91, 246, 189),
+                backgroundColor: const Color.fromARGB(255, 231, 244, 174),
               ),
             ),
             const SizedBox(height: 20),
@@ -215,80 +215,73 @@ class _CategoriesState extends State<Categories> {
       );
     }
 
-    return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.stretch, // Makes cards span the width
-      children: [
-        const SizedBox(height: 20),
-        const Text(
-          "\t\t\tIncome",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ), // Spacer
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: 20),
+          const Text(
+            "\t\t\tIncome",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const Divider(
+            color: Colors.grey,
+            thickness: 1,
+            indent: 20,
+            endIndent: 20,
+            height: 10,
+          ),
+          //Income categories
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _incomeCategories.length,
+            itemBuilder: (context, index) {
+              return Category_card(cat: _incomeCategories[index]);
+            },
+          ),
 
-        const Divider(
-          color: Colors.grey, // Color of the line
-          thickness: 1, // How thick the line is
-          indent: 20, // Space from the left edge
-          endIndent: 20, // Space from the right edge
-          height:
-              10, // Total vertical space the divider takes up (padding top + bottom)
-        ),
-        Expanded(
-          child: ListView(
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _incomeCategories.length,
-                itemBuilder: (context, index) {
-                  return Category_card(cat: _incomeCategories[index]);
-                },
-              ),
-              const SizedBox(height: 15),
-            ],
+          const SizedBox(height: 25),
+          const Text(
+            "\t\t\tExpense",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-        ),
-        const SizedBox(height: 20),
-        const Text(
-          "\t\t\tExpense",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ), // Spacer
-        const Divider(
-          color: Colors.grey, // Color of the line
-          thickness: 1, // How thick the line is
-          indent: 20, // Space from the left edge
-          endIndent: 20, // Space from the right edge
-          height:
-              10, // Total vertical space the divider takes up (padding top + bottom)
-        ),
-        Expanded(
-          child: ListView(
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _expenseCategories.length,
-                itemBuilder: (context, index) {
-                  return Category_card(cat: _expenseCategories[index]);
-                },
-              ),
-              const SizedBox(height: 15),
-            ],
+          const Divider(
+            color: Colors.grey,
+            thickness: 1,
+            indent: 20,
+            endIndent: 20,
+            height: 10,
           ),
-        ),
-        Center(
-          child: FloatingActionButton.extended(
-            onPressed: () => _showAddCategoryDialog(),
-            label: const Text(
-              'Add Category',
-              style: TextStyle(fontWeight: FontWeight.w600),
+
+          //Expense categories
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _expenseCategories.length,
+            itemBuilder: (context, index) {
+              return Category_card(cat: _expenseCategories[index]);
+            },
+          ),
+
+          const SizedBox(height: 30),
+          Center(
+            child: FloatingActionButton.extended(
+              onPressed: () => _showAddCategoryDialog(),
+              label: const Text(
+                'Add Category',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Color.fromARGB(255, 92, 92, 92),
+                ),
+              ),
+              icon: const Icon(Icons.add_circle_outline),
+              backgroundColor: const Color.fromARGB(255, 231, 244, 174),
             ),
-            icon: const Icon(Icons.add_circle_outline),
-            backgroundColor: const Color.fromARGB(255, 91, 246, 189),
           ),
-        ),
-        const SizedBox(height: 20),
-      ],
+          const SizedBox(height: 40), // Extra bottom padding for safe scrolling
+        ],
+      ),
     );
   }
 }

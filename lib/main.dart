@@ -36,7 +36,7 @@ class _BudgetAppState extends State<BudgetApp> {
           'CashMate',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        backgroundColor: Color.fromARGB(255, 17, 192, 219),
+        backgroundColor: Color.fromARGB(255, 92, 108, 110),
         elevation: 0, // Removes shadow for a flat look
         centerTitle: true, // Looks more balanced
         // 2. ROUNDED SHAPE: Gives the header a modern feel
@@ -44,16 +44,6 @@ class _BudgetAppState extends State<BudgetApp> {
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
         ),
       ),
-      // appBar: AppBar(
-      //   title: const Text(
-      //     'CashMate',
-      //     style: TextStyle(fontWeight: FontWeight.bold),
-      //   ),
-
-      //   backgroundColor: const Color.fromARGB(255, 17, 192, 219),
-      // ),
-
-      //Displays the current page based on currentIndex
       body: _pages[currentIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -69,11 +59,11 @@ class _BudgetAppState extends State<BudgetApp> {
             // (Make sure _loadTransactions is public or accessible)
           }
         },
-        backgroundColor: const Color.fromARGB(255, 17, 192, 219),
-        child: const Icon(Icons.add),
+        backgroundColor: Color.fromARGB(255, 139, 156, 158),
+        child: const Icon(Icons.add, color: Color.fromARGB(255, 249, 206, 89)),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromARGB(255, 17, 192, 219),
+        backgroundColor: Color.fromARGB(255, 92, 108, 110),
 
         //currently selected tab
         currentIndex: currentIndex,
@@ -104,8 +94,8 @@ class _BudgetAppState extends State<BudgetApp> {
         //type as fixed to show all labels consistently
         type: BottomNavigationBarType.fixed,
         // Set colors for better visibility
-        selectedItemColor: const Color.fromARGB(255, 116, 115, 115),
-        unselectedItemColor: const Color.fromARGB(255, 255, 255, 255),
+        selectedItemColor: const Color.fromARGB(255, 249, 206, 89),
+        unselectedItemColor: const Color.fromARGB(255, 197, 183, 144),
       ),
     );
   }

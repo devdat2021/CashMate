@@ -197,10 +197,13 @@ class _AccountsState extends State<Accounts> {
                 onPressed: () => _showAddAccountDialog(),
                 label: const Text(
                   'Add Account',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Color.fromARGB(255, 92, 92, 92),
+                  ),
                 ),
                 icon: const Icon(Icons.add_circle_outline),
-                backgroundColor: const Color.fromARGB(255, 91, 246, 189),
+                backgroundColor: const Color.fromARGB(255, 231, 244, 174),
               ),
             ),
             const SizedBox(height: 20),
@@ -214,7 +217,7 @@ class _AccountsState extends State<Accounts> {
       children: [
         // Inside the Column's children:
         Card(
-          color: const Color.fromARGB(255, 204, 236, 233),
+          color: const Color.fromARGB(255, 246, 252, 199),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -305,10 +308,13 @@ class _AccountsState extends State<Accounts> {
                   onPressed: () => _showAddAccountDialog(),
                   label: const Text(
                     'Add Account',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Color.fromARGB(255, 92, 92, 92),
+                    ),
                   ),
                   icon: const Icon(Icons.add_circle_outline),
-                  backgroundColor: const Color.fromARGB(255, 91, 246, 189),
+                  backgroundColor: const Color.fromARGB(255, 231, 244, 174),
                 ),
               ),
               const SizedBox(height: 20),

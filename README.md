@@ -1,4 +1,4 @@
-# CashMate 💰
+# CashMate 
 
 CashMate is a personal finance and budgeting application built with **Flutter**. It helps users track their income and expenses, manage multiple accounts, and visualize their spending habits through intuitive charts.
 
@@ -19,7 +19,7 @@ CashMate is a personal finance and budgeting application built with **Flutter**.
 |:---:|:---:|:---:|:---:|
 | *(Add screenshot)* | *(Add screenshot)* | *(Add screenshot)* | *(Add screenshot)* | -->
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **Framework:** [Flutter](https://flutter.dev/) (Dart)
 * **Database:** [sqflite](https://pub.dev/packages/sqflite) (SQLite for local storage)
@@ -27,7 +27,7 @@ CashMate is a personal finance and budgeting application built with **Flutter**.
 * **Charts:** [fl_chart](https://pub.dev/packages/fl_chart)
 * **Formatting:** [intl](https://pub.dev/packages/intl) (Date and currency formatting)
 
-## 🚀 Getting Started
+## Getting Started
 
 To run this project locally, you need to have **Flutter** installed on your machine.
 

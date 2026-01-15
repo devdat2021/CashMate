@@ -18,14 +18,8 @@ class DatabaseHelper {
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'cashmate.db');
 
-    return await openDatabase(
-      path,
-      version: 1, // Must be an integer
-      onCreate: _onCreate, //if db not exist
-    );
+    return await openDatabase(path, version: 1, onCreate: _onCreate);
   }
-
-  //Table definitions s
 
   Future _onCreate(Database db, int version) async {
     // 1. ACCOUNTS Table
@@ -89,8 +83,8 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.query(
       'categories',
-      where: 'type = ?', // The SQL WHERE clause
-      whereArgs: ['income'], // The value to match
+      where: 'type = ?',
+      whereArgs: ['income'],
       orderBy: 'name ASC',
     );
   }
@@ -100,36 +94,43 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.query(
       'categories',
-      where: 'type = ?', // The SQL WHERE clause
-      whereArgs: ['expense'], // The value to match
+      where: 'type = ?',
+      whereArgs: ['expense'],
       orderBy: 'name ASC',
     );
   }
 
-  // //Fetch all transactions
-  // Future<List<Map<String, dynamic>>> getAllTransactions() async {
-  //   Database db = await instance.database;
-  //   return await db.query('transactions', orderBy: 'id DESC');
-  // }
-  Future<List<Map<String, dynamic>>> getAllTransactions() async {
+  Future<List<Map<String, dynamic>>> getAllTransactions(DateTime date) async {
     Database db = await instance.database;
 
-    // We select ALL transaction fields (t.*)
-    // AND specific category fields (c.name, c.iconCode)
-    // We use LEFT JOIN so that even if a transaction has NO category, it still shows up.
-    return await db.rawQuery('''
-    SELECT 
-      t.*, 
-      c.name AS category_name, 
-      c.icon_code AS category_icon
-    FROM transactions t
-    LEFT JOIN categories c ON t.category_id = c.id
-    ORDER BY t.date DESC
-  ''');
+    final startOfMonth = DateTime(
+      date.year,
+      date.month,
+      1,
+    ).millisecondsSinceEpoch;
+    final endOfMonth = DateTime(
+      date.year,
+      date.month + 1,
+      1,
+    ).millisecondsSinceEpoch;
+
+    return await db.rawQuery(
+      '''
+      SELECT 
+        t.*, 
+        c.name AS category_name, 
+        c.icon_code AS category_icon
+      FROM transactions t
+      LEFT JOIN categories c ON t.category_id = c.id
+      WHERE t.date >= ? AND t.date < ?
+      ORDER BY t.date DESC
+    ''',
+      [startOfMonth, endOfMonth],
+    );
   }
 
   /// Inserts a transaction and updates the associated account's balance in one atomic operation.
-  /// NOTE: For transfers, call this logic twice within an external transaction.
+  ///For transfers call this logic twice within an external transaction.
   Future<int> saveNewTransaction(
     Map<String, dynamic> transactionData,
     double amount,
@@ -172,20 +173,18 @@ class DatabaseHelper {
     };
   }
 
-  Future<Map<String, double>> getMonthlyTotals() async {
+  Future<Map<String, double>> getMonthlyTotals(DateTime date) async {
     final db = await instance.database;
-    final now = DateTime.now();
-
     //This was AI logic not mine but simple
     final startOfMonth = DateTime(
-      now.year,
-      now.month,
+      date.year,
+      date.month,
       1,
     ).millisecondsSinceEpoch;
 
     final endOfMonth = DateTime(
-      now.year,
-      now.month + 1,
+      date.year,
+      date.month + 1,
       1,
     ).millisecondsSinceEpoch;
 
@@ -223,7 +222,64 @@ class DatabaseHelper {
     }
   }
 
-  // You can remove the generic insert/queryAll methods now that you have specific ones.
-  // Future<int> insert(String table, Map<String, dynamic> row) async { ... }
-  // Future<List<Map<String, dynamic>>> queryAll(String table) async { ... }
+  //function to fetch all income/expense categories along with the total money based on the given month
+  Future<List<Map<String, dynamic>>> getCategoryBreakdown(
+    DateTime month,
+    String type,
+  ) async {
+    final db = await instance.database;
+
+    // Calculate start and end of the selected month
+    final start = DateTime(month.year, month.month, 1).millisecondsSinceEpoch;
+    final end = DateTime(month.year, month.month + 1, 1).millisecondsSinceEpoch;
+
+    // Query: Join Transactions with Categories
+    // Filter by: Date Range AND Transaction Type
+    // Group by: Category
+    return await db.rawQuery(
+      '''
+      SELECT 
+        c.name, 
+        c.icon_code, 
+        SUM(t.amount) as total 
+      FROM transactions t
+      JOIN categories c ON t.category_id = c.id
+      WHERE t.transaction_type = ? 
+        AND t.date >= ? 
+        AND t.date < ?
+      GROUP BY t.category_id 
+      ORDER BY total DESC
+    ''',
+      [type, start, end],
+    );
+  }
+
+  //function to fetch all accounts along with their expenses and income throughout a given month
+  Future<List<Map<String, dynamic>>> getAccountBreakdown(
+    DateTime month,
+    String type,
+  ) async {
+    final db = await instance.database;
+
+    final start = DateTime(month.year, month.month, 1).millisecondsSinceEpoch;
+    final end = DateTime(month.year, month.month + 1, 1).millisecondsSinceEpoch;
+
+    // Query: Join Transactions with Accounts
+    return await db.rawQuery(
+      '''
+      SELECT 
+        a.name, 
+        a.icon_code, 
+        SUM(t.amount) as total 
+      FROM transactions t
+      JOIN accounts a ON t.account_id = a.id
+      WHERE t.transaction_type = ? 
+        AND t.date >= ? 
+        AND t.date < ?
+      GROUP BY t.account_id 
+      ORDER BY total DESC
+    ''',
+      [type, start, end],
+    );
+  }
 }

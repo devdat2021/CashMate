@@ -3,7 +3,6 @@ import 'package:budget/models/transaction.dart';
 import 'package:budget/utils/database_helper.dart';
 import 'package:intl/intl.dart';
 
-//Some errors to fix
 class Transaction_card extends StatelessWidget {
   final Transaction transaction;
 
@@ -21,7 +20,10 @@ class Transaction_card extends StatelessWidget {
           backgroundColor: color.withValues(
             alpha: 0.3,
           ), // Light background circle
-          child: transaction.iconWidget,
+          child: Icon(
+            transaction.iconWidget.icon, // reuse the same IconData
+            color: const Color.fromARGB(255, 53, 52, 52),
+          ),
         ),
         //leading:transaction.iconWidget ?? Icon(IconData(59473, fontFamily: 'MaterialIcons')),
         title: Text(
@@ -52,9 +54,12 @@ class _RecordsState extends State<Records> {
   Map<String, double> _totals = {'income': 0.0, 'expense': 0.0};
   List<Transaction> transactions = [];
   bool _isLoading = true;
+  DateTime _selectedDate = DateTime.now();
 
   void _loadTotals() async {
-    final totals = await DatabaseHelper.instance.getMonthlyTotals();
+    final totals = await DatabaseHelper.instance.getMonthlyTotals(
+      _selectedDate,
+    );
     setState(() {
       _totals = totals;
     });
@@ -64,7 +69,7 @@ class _RecordsState extends State<Records> {
     try {
       List<Map<String, dynamic>> raw_transactions = await DatabaseHelper
           .instance
-          .getAllTransactions();
+          .getAllTransactions(_selectedDate);
       List<Transaction> loadedAccounts = raw_transactions.map((map) {
         return Transaction.fromMap(map);
       }).toList();
@@ -89,9 +94,21 @@ class _RecordsState extends State<Records> {
     _loadTransactions();
   }
 
+  void _changeMonth(int monthsToAdd) {
+    setState(() {
+      _selectedDate = DateTime(
+        _selectedDate.year,
+        _selectedDate.month + monthsToAdd,
+        1,
+      );
+    });
+    _loadTotals();
+    _loadTransactions(); // Refresh data for the new month
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Use a Column as the root container for the whole page
+    String monthName = DateFormat('MMMM').format(_selectedDate);
     return Column(
       crossAxisAlignment:
           CrossAxisAlignment.stretch, // Ensures card takes full width
@@ -109,14 +126,31 @@ class _RecordsState extends State<Records> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
-                    "Current Month Records Summary",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                    textAlign: TextAlign.center,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment
+                        .spaceBetween, // Pushes arrows to the edges
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.chevron_left),
+                        onPressed: () => _changeMonth(-1), // Go back 1 month
+                        tooltip: 'Previous Month',
+                      ),
+
+                      Text(
+                        "$monthName Summary", // Removed "Month" to save space, or keep it if you prefer
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+
+                      IconButton(
+                        icon: const Icon(Icons.chevron_right),
+                        onPressed: () => _changeMonth(1), // Go forward 1 month
+                        tooltip: 'Next Month',
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 15),
                   Row(
@@ -185,15 +219,13 @@ class _RecordsState extends State<Records> {
             ),
           ),
         ),
-        // END STATIC HEADER CARD
 
-        // 2. SCROLLING TRANSACTION LIST
-        // MUST use Expanded to tell the list to take the remaining height
         Expanded(
           child: _isLoading
               ? const Center(child: CircularProgressIndicator()) // Show spinner
+              : transactions.isEmpty
+              ? const Center(child: Text("No records for this month"))
               : ListView.builder(
-                  // itemCount will eventually be based on your transaction list size
                   itemCount: transactions.length,
                   itemBuilder: (context, index) {
                     return Transaction_card(transaction: transactions[index]);
