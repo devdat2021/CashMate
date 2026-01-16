@@ -4,12 +4,25 @@ import 'package:budget/utils/database_helper.dart';
 
 class Category_card extends StatelessWidget {
   final Category cat;
-  const Category_card({super.key, required this.cat});
+  final VoidCallback onLongPress;
+  const Category_card({
+    super.key,
+    required this.cat,
+    required this.onLongPress,
+  });
   @override
   Widget build(BuildContext context) {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(
+          color: Color.fromARGB(255, 247, 236, 139),
+          width: 1.5,
+        ),
+      ),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ListTile(
+        onLongPress: onLongPress,
         leading: cat.iconWidget,
         title: Text(cat.name, style: const TextStyle(fontSize: 18)),
 
@@ -44,6 +57,70 @@ class _CategoriesState extends State<Categories> {
   void initState() {
     super.initState();
     _loadAccounts();
+  }
+
+  void _showCategoryOptions(Category category) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Edit Category'),
+              onTap: () {
+                Navigator.pop(context);
+                _showEditCategoryDialog(category);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Delete Category'),
+              onTap: () async {
+                Navigator.pop(context);
+                await DatabaseHelper.instance.deleteCategory(category.id!);
+                _loadAccounts();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditCategoryDialog(Category category) {
+    final nameController = TextEditingController(text: category.name);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Edit Category"),
+        content: TextField(
+          controller: nameController,
+          decoration: const InputDecoration(labelText: "Category Name"),
+        ),
+        actions: [
+          TextButton(
+            child: const Text("Cancel"),
+            onPressed: () => Navigator.pop(ctx),
+          ),
+          ElevatedButton(
+            child: const Text("Update"),
+            onPressed: () async {
+              final updatedCat = Category(
+                id: category.id,
+                name: nameController.text,
+                type: category.type,
+                iconCode: category.iconCode,
+                budget: category.budget,
+              );
+              await DatabaseHelper.instance.updateCategory(updatedCat.toMap());
+              _loadAccounts();
+              Navigator.pop(ctx);
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   void _showAddCategoryDialog() {
@@ -237,7 +314,11 @@ class _CategoriesState extends State<Categories> {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: _incomeCategories.length,
             itemBuilder: (context, index) {
-              return Category_card(cat: _incomeCategories[index]);
+              return Category_card(
+                cat: _incomeCategories[index],
+                onLongPress: () =>
+                    _showCategoryOptions(_incomeCategories[index]),
+              );
             },
           ),
 
@@ -260,7 +341,11 @@ class _CategoriesState extends State<Categories> {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: _expenseCategories.length,
             itemBuilder: (context, index) {
-              return Category_card(cat: _expenseCategories[index]);
+              return Category_card(
+                cat: _expenseCategories[index],
+                onLongPress: () =>
+                    _showCategoryOptions(_expenseCategories[index]),
+              );
             },
           ),
 

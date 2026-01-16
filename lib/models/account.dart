@@ -6,7 +6,6 @@ class Account {
   final double balance;
   final int iconCode;
 
-
   Account({
     this.id,
     required this.name,
@@ -21,7 +20,7 @@ class Account {
   Map<String, dynamic> toMap() {
     //for insertion and updation
     return {
-      //'id': id,
+      'id': id,
       'name': name,
       'current_balance': balance,
       //'icon_code': iconCode, setdefault for now

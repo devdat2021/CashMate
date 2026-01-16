@@ -4,14 +4,26 @@ import 'package:budget/utils/database_helper.dart';
 
 class AccountCard extends StatelessWidget {
   final Account account;
-
-  const AccountCard({super.key, required this.account});
+  final VoidCallback onLongPress;
+  const AccountCard({
+    super.key,
+    required this.account,
+    required this.onLongPress,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(
+          color: Color.fromARGB(255, 247, 236, 139),
+          width: 1.5,
+        ),
+      ),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ListTile(
+        onLongPress: onLongPress,
         leading: account.iconWidget,
         title: Text(account.name, style: const TextStyle(fontSize: 18)),
         trailing: Text(
@@ -171,6 +183,139 @@ class _AccountsState extends State<Accounts> {
     );
   }
 
+  // Show Options (Edit / Delete)
+  void _showAccountOptions(Account account) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.edit, color: Colors.blue),
+                title: const Text('Edit Account'),
+                onTap: () {
+                  Navigator.pop(context); // Close sheet
+                  _showEditAccountDialog(account); // Open Edit Dialog
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Delete Account'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _confirmDelete(account.id!);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // Delete Confirmation
+  void _confirmDelete(int id) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Delete Account?"),
+        content: const Text(
+          "This will delete the account and all its transactions.",
+        ),
+        actions: [
+          TextButton(
+            child: const Text("Cancel"),
+            onPressed: () => Navigator.pop(ctx),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text("Delete"),
+            onPressed: () async {
+              await DatabaseHelper.instance.deleteAccount(id);
+              _loadAccounts(); // Refresh list
+              _loadTotals(); // Refresh totals
+              Navigator.pop(ctx);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Edit Dialog (Pre-filled)
+  void _showEditAccountDialog(Account account) {
+    final nameController = TextEditingController(text: account.name);
+    final balanceController = TextEditingController(
+      text: account.balance.toString(),
+    );
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Account'),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Account Name'),
+                  validator: (val) => val!.isEmpty ? 'Enter a name' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: balanceController,
+                  decoration: const InputDecoration(
+                    labelText: 'Current Balance',
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (val) => double.tryParse(val!) == null
+                      ? 'Enter valid number'
+                      : null,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            ElevatedButton(
+              child: const Text('Update'),
+              onPressed: () async {
+                if (formKey.currentState!.validate()) {
+                  // Create updated object (Keep the SAME ID)
+                  final updatedAccount = Account(
+                    id: account.id, // Important: Pass the ID!
+                    name: nameController.text,
+                    balance: double.parse(balanceController.text),
+                    iconCode: account.iconCode,
+                  );
+
+                  await DatabaseHelper.instance.updateAccount(
+                    updatedAccount.toMap(),
+                  );
+                  _loadAccounts(); // Refresh UI
+                  _loadTotals();
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -299,7 +444,10 @@ class _AccountsState extends State<Accounts> {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: accounts.length,
                 itemBuilder: (context, index) {
-                  return AccountCard(account: accounts[index]);
+                  return AccountCard(
+                    account: accounts[index],
+                    onLongPress: () => _showAccountOptions(accounts[index]),
+                  );
                 },
               ),
               const SizedBox(height: 15),

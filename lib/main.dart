@@ -64,6 +64,14 @@ class _BudgetAppState extends State<BudgetApp> {
           }
         },
         backgroundColor: Color.fromARGB(255, 139, 156, 158),
+
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12), // Keeps the corners rounded
+          side: const BorderSide(
+            color: Color.fromARGB(255, 247, 236, 139), // <--- YOUR BORDER COLOR
+            width: 1.0, // Thickness of the border
+          ),
+        ),
         child: const Icon(Icons.add, color: Color.fromARGB(255, 249, 206, 89)),
       ),
       bottomNavigationBar: BottomNavigationBar(

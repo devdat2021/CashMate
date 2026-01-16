@@ -282,4 +282,35 @@ class DatabaseHelper {
       [type, start, end],
     );
   }
+
+  // --- ACCOUNT OPERATIONS ---
+  Future<int> updateAccount(Map<String, dynamic> account) async {
+    Database db = await instance.database;
+    return await db.update(
+      'accounts',
+      account,
+      where: 'id = ?',
+      whereArgs: [account['id']],
+    );
+  }
+
+  Future<int> deleteAccount(int id) async {
+    Database db = await instance.database;
+    return await db.delete('accounts', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<int> updateCategory(Map<String, dynamic> category) async {
+    Database db = await instance.database;
+    return await db.update(
+      'categories',
+      category,
+      where: 'id = ?',
+      whereArgs: [category['id']],
+    );
+  }
+
+  Future<int> deleteCategory(int id) async {
+    Database db = await instance.database;
+    return await db.delete('categories', where: 'id = ?', whereArgs: [id]);
+  }
 }
