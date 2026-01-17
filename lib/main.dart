@@ -19,23 +19,21 @@ class BudgetApp extends StatefulWidget {
 class _BudgetAppState extends State<BudgetApp> {
   // 0-Accounts, 1-Records, 2-Analysis, 3-Categories
   int currentIndex = 0;
-
-  // List of Widgets pages for the different screens/tabs
-  final List<Widget> _pages = [
-    const Accounts(),
-    const Records(),
-    const Center(child: Text('Analysis Page', style: TextStyle(fontSize: 24))),
-    const Categories(),
-  ];
+  int _refreshKey = 0;
 
   @override
   Widget build(BuildContext context) {
+    // List of Widgets pages for the different screens/tabs
+    final List<Widget> _pages = [
+      Accounts(key: ValueKey(_refreshKey)),
+      Records(key: ValueKey(_refreshKey)),
+      const Center(
+        child: Text('Analysis Page', style: TextStyle(fontSize: 24)),
+      ),
+      const Categories(),
+    ];
     return Scaffold(
       appBar: AppBar(
-        // title: const Text(
-        //   'CashMate',
-        //   style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        // ),
         title: Image.asset(
           'assets/Topbar_logo.png',
           height: 40, // Adjust height to fit
@@ -52,24 +50,24 @@ class _BudgetAppState extends State<BudgetApp> {
       body: _pages[currentIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // Navigate to Add Page
           final bool? result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AddTransactionPage()),
           );
 
           if (result == true) {
-            // Call your load function here, e.g., _loadTransactions();
-            // (Make sure _loadTransactions is public or accessible)
+            setState(() {
+              _refreshKey++; // Change the ID, forcing a reload!
+            });
           }
         },
         backgroundColor: Color.fromARGB(255, 139, 156, 158),
 
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12), // Keeps the corners rounded
+          borderRadius: BorderRadius.circular(12),
           side: const BorderSide(
-            color: Color.fromARGB(255, 247, 236, 139), // <--- YOUR BORDER COLOR
-            width: 1.0, // Thickness of the border
+            color: Color.fromARGB(255, 247, 236, 139),
+            width: 1.0,
           ),
         ),
         child: const Icon(Icons.add, color: Color.fromARGB(255, 249, 206, 89)),

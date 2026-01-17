@@ -313,4 +313,12 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.delete('categories', where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<List<Map<String, dynamic>>> trans_account(int id) async {
+    Database db = await instance.database;
+    return await db.rawQuery(
+      "SELECT name, icon_code from accounts where id=? ",
+      [id],
+    );
+  }
 }
