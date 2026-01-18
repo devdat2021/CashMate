@@ -321,4 +321,84 @@ class DatabaseHelper {
       [id],
     );
   }
+
+  //Update a transaction
+  Future<void> updateTransaction(Map<String, dynamic> newT) async {
+    final db = await instance.database;
+
+    await db.transaction((txn) async {
+      final int id = newT['id'];
+
+      //Fetch the OLD transaction from the database
+      final List<Map<String, dynamic>> oldResult = await txn.query(
+        'transactions',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+
+      if (oldResult.isNotEmpty) {
+        final oldT = oldResult.first;
+
+        double oldAmount = oldT['amount'] as double;
+        String oldType = oldT['transaction_type'] as String;
+        int oldAccountId = oldT['account_id'] as int;
+
+        double revertAmount = (oldType == 'expense') ? oldAmount : -oldAmount;
+
+        await txn.rawUpdate(
+          'UPDATE accounts SET current_balance = current_balance + ? WHERE id = ?',
+          [revertAmount, oldAccountId],
+        );
+
+        double newAmount = newT['amount'] as double;
+        String newType = newT['transaction_type'] as String;
+        int newAccountId = newT['account_id'] as int;
+        double applyAmount = (newType == 'expense') ? -newAmount : newAmount;
+
+        await txn.rawUpdate(
+          'UPDATE accounts SET current_balance = current_balance + ? WHERE id = ?',
+          [applyAmount, newAccountId],
+        );
+
+        //update the transaction row
+        await txn.update(
+          'transactions',
+          newT,
+          where: 'id = ?',
+          whereArgs: [id],
+        );
+      }
+    });
+  }
+
+  Future<void> deleteTransaction(int id) async {
+    final db = await instance.database;
+
+    await db.transaction((txn) async {
+      // 1. Fetch the transaction details first
+      final List<Map<String, dynamic>> result = await txn.query(
+        'transactions',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+
+      if (result.isNotEmpty) {
+        final t = result.first;
+        final double amount = t['amount'] as double;
+        final String type = t['transaction_type'] as String;
+        final int accountId = t['account_id'] as int;
+
+        // 2. Revert the Balance
+        double revertAmount = (type == 'expense') ? amount : -amount;
+
+        await txn.rawUpdate(
+          'UPDATE accounts SET current_balance = current_balance + ? WHERE id = ?',
+          [revertAmount, accountId],
+        );
+
+        // 3. Finally, delete the transaction row
+        await txn.delete('transactions', where: 'id = ?', whereArgs: [id]);
+      }
+    });
+  }
 }

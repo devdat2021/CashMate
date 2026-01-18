@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:budget/utils/database_helper.dart';
 import 'package:budget/models/account.dart';
 import 'package:budget/models/category.dart';
+import 'package:budget/models/transaction.dart';
 
 class AddTransactionPage extends StatefulWidget {
-  const AddTransactionPage({super.key});
+  final Transaction? transactionToEdit;
+  const AddTransactionPage({super.key, this.transactionToEdit});
 
   @override
   State<AddTransactionPage> createState() => _AddTransactionPageState();
@@ -33,6 +35,20 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   void initState() {
     super.initState();
     _loadData();
+    if (widget.transactionToEdit != null) {
+      final t = widget.transactionToEdit!;
+      _amountController.text = t.amount.toString();
+      _noteController.text = t.note ?? "";
+      _selectedDate = t.date;
+      _transactionType = t.transactionType;
+      _loadData().then((_) {
+        setState(() {
+          _selectedCategory = _categories.firstWhere(
+            (c) => c.id == t.categoryId,
+          );
+        });
+      });
+    }
   }
 
   // Fetch Accounts and Categories from DB
@@ -116,12 +132,25 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     };
 
     // Use your existing helper function
-    await DatabaseHelper.instance.saveNewTransaction(
-      row,
-      amount,
-      _selectedAccount!.id!,
-    );
+    if (widget.transactionToEdit == null) {
+      await DatabaseHelper.instance.saveNewTransaction(
+        row,
+        amount,
+        _selectedAccount!.id!,
+      );
+    } else {
+      final updatedTransaction = {
+        'id': widget.transactionToEdit!.id,
+        'amount': double.parse(_amountController.text),
+        'date': _selectedDate.millisecondsSinceEpoch,
+        'transaction_type': _transactionType,
+        'note': _noteController.text,
+        'account_id': _selectedAccount!.id,
+        'category_id': _selectedCategory!.id,
+      };
 
+      await DatabaseHelper.instance.updateTransaction(updatedTransaction);
+    }
     if (mounted) {
       Navigator.pop(context, true);
     }

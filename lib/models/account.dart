@@ -35,4 +35,12 @@ class Account {
       iconCode: map['icon_code'] as int,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Account && runtimeType == other.runtimeType && id == other.id; // Compare by ID, not memory address!
+
+  @override
+  int get hashCode => id.hashCode;
 }

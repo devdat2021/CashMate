@@ -46,4 +46,12 @@ class Category {
   Icon get iconWidget {
     return Icon(IconData(iconCode, fontFamily: 'MaterialIcons'));
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Category && runtimeType == other.runtimeType && id == other.id; // Compare by ID, not memory address!
+
+  @override
+  int get hashCode => id.hashCode;
 }

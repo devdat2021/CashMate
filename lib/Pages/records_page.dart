@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:budget/models/transaction.dart';
 import 'package:budget/utils/database_helper.dart';
 import 'package:intl/intl.dart';
+import 'package:budget/Pages/transaction_page.dart';
 
 class Transaction_card extends StatelessWidget {
   final Transaction transaction;
@@ -207,9 +208,21 @@ class RecordsState extends State<Records> {
                         "Edit",
                         style: TextStyle(color: Colors.blue),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
                         Navigator.pop(ctx);
-                        // TODO: Call your _showAddTransactionDialog(existingTransaction: t)
+                        final bool? result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddTransactionPage(
+                              transactionToEdit:
+                                  t, // <--- Pass the transaction here!
+                            ),
+                          ),
+                        );
+                        if (result == true) {
+                          _loadTransactions();
+                          _loadTotals();
+                        }
                       },
                     ),
                     // DELETE BUTTON
@@ -277,12 +290,82 @@ class RecordsState extends State<Records> {
     );
   }
 
-  // Helper for Deleting
   void _confirmDeleteTransaction(int id) {
-    // ... Standard ShowDialog "Are you sure?" ...
-    // ... If yes: await DatabaseHelper.instance.deleteTransaction(id);
-    // ... Then: _loadData();
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Header
+                const Row(
+                  children: [
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      color: Colors.redAccent,
+                      size: 32,
+                    ),
+                    SizedBox(width: 16),
+                    Text(
+                      "Delete Transaction",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // Message
+                const Text(
+                  "Are you sure?",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(height: 2.0),
+                ),
+                const SizedBox(height: 28),
+
+                // Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(dialogContext),
+                      child: const Text("Cancel"),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () async {
+                        Navigator.pop(dialogContext);
+                        await DatabaseHelper.instance.deleteTransaction(id);
+                        setState(() {
+                          _loadTransactions();
+                          _loadTotals();
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text("Delete"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
+
   @override
   Widget build(BuildContext context) {
     String monthName = DateFormat('MMMM').format(_selectedDate);
@@ -291,12 +374,15 @@ class RecordsState extends State<Records> {
           CrossAxisAlignment.stretch, // Ensures card takes full width
       children: [
         Padding(
-          // Padding only needed on the outside edges
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
           child: Card(
             elevation: 3.0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
+              side: const BorderSide(
+                color: Color.fromARGB(255, 247, 236, 139),
+                width: 1.5,
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
