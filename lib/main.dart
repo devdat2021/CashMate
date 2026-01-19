@@ -3,6 +3,8 @@ import 'Pages/accounts_page.dart';
 import 'Pages/records_page.dart';
 import 'Pages/categories_page.dart';
 import 'Pages/transaction_page.dart';
+import 'package:flutter/gestures.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MaterialApp(home: BudgetApp()));
@@ -33,6 +35,110 @@ class _BudgetAppState extends State<BudgetApp> {
       const Categories(),
     ];
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            // A. The Header (Cyan part)
+            // const UserAccountsDrawerHeader(
+            //   decoration: BoxDecoration(
+            //     color: Color.fromARGB(255, 92, 108, 110),
+            //   ),
+            //   accountName: Text(
+            //     "\t\tUser",
+            //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            //   ),
+            //   accountEmail: Text("Manage your finances"),
+            //   currentAccountPicture: CircleAvatar(
+            //     backgroundColor: Colors.white,
+            //     child: Icon(
+            //       Icons.person,
+            //       size: 35,
+            //       color: Color.fromARGB(255, 92, 108, 110),
+            //     ),
+            //   ),
+            // ),
+
+            // B. The Menu Options
+            ListTile(
+              leading: const Icon(Icons.file_download),
+              title: const Text('Export Data (CSV)'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                //_exportData(); // Call your export function
+              },
+            ),
+
+            // Placeholder for future options
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings'),
+              onTap: () {
+                Navigator.pop(context);
+                // Future: Navigator.push(context, MaterialPageRoute(builder: (c) => SettingsPage()));
+              },
+            ),
+
+            const Divider(), // Visual separator
+
+            ListTile(
+              leading: const Icon(Icons.info_outline),
+              title: const Text('About'),
+              onTap: () {
+                Navigator.pop(context);
+                showAboutDialog(
+                  context: context,
+                  applicationName: "CashMate",
+                  applicationVersion: "1.0.0",
+                  children: [
+                    Text.rich(
+                      TextSpan(
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        children: [
+                          TextSpan(text: 'Creator: '),
+                          TextSpan(
+                            style: TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                            ),
+                            text: 'P Devdat',
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => launchUrl(
+                                Uri.parse('https://github.com/devdat2021'),
+                              ),
+                          ),
+                          TextSpan(text: '\nSource Code: '),
+                          TextSpan(
+                            style: TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                            ),
+                            text: 'github.com/devdat2021/CashMate/',
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => launchUrl(
+                                Uri.parse(
+                                  'https://github.com/devdat2021/CashMate',
+                                ),
+                              ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+
+                // showAboutDialog(
+                //   context: context,
+                //   Text.rich(TextSpan()),
+                //   applicationName: "CashMate",
+                //   applicationVersion: "1.0.0",
+
+                // );
+              },
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
         title: Image.asset(
           'assets/Topbar_logo.png',
