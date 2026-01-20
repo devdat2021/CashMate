@@ -22,6 +22,15 @@ class _BudgetAppState extends State<BudgetApp> {
   // 0-Accounts, 1-Records, 2-Analysis, 3-Categories
   int currentIndex = 0;
   int _refreshKey = 0;
+  void _exportData() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Exporting data... (Coming Soon)")),
+    );
+    // Future Logic:
+    // 1. Fetch all transactions from DB
+    // 2. Convert to CSV string
+    // 3. Save to phone storage
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +74,7 @@ class _BudgetAppState extends State<BudgetApp> {
               title: const Text('Export Data (CSV)'),
               onTap: () {
                 Navigator.pop(context); // Close the drawer
-                //_exportData(); // Call your export function
+                _exportData(); // Call your export function
               },
             ),
 

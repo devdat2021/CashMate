@@ -125,6 +125,7 @@ class _CategoriesState extends State<Categories> {
 
   void _showAddCategoryDialog() {
     final TextEditingController nameController = TextEditingController();
+    final TextEditingController budgetController = TextEditingController();
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     type = 'expense';
 
@@ -134,85 +135,186 @@ class _CategoriesState extends State<Categories> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text('Add New Category'),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              titlePadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+              contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+              title: const Text(
+                'New Category',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+              ),
               content: Form(
                 key: formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Name field - first and most important
                     TextFormField(
                       controller: nameController,
-                      decoration: const InputDecoration(
+                      autofocus: true,
+                      decoration: InputDecoration(
                         labelText: 'Category Name',
+                        hintText: 'e.g. Food, Salary, Transport',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
                       ),
+                      textCapitalization: TextCapitalization.words,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a name.';
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter a category name';
                         }
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
-                    const Text('Type'),
-                    const SizedBox(height: 5),
-                    SegmentedButton<String>(
-                      segments: const <ButtonSegment<String>>[
-                        ButtonSegment(value: 'expense', label: Text('Expense')),
-                        ButtonSegment(value: 'income', label: Text('Income')),
-                      ],
-                      selected: {type},
-                      onSelectionChanged: (Set<String> newSelection) {
-                        setDialogState(() {
-                          type = newSelection.first;
-                        });
-                      },
+
+                    const SizedBox(height: 28),
+
+                    Text(
+                      'Type',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[800],
+                      ),
                     ),
+                    const SizedBox(height: 8),
+
+                    Center(
+                      child: SegmentedButton<String>(
+                        multiSelectionEnabled: false,
+                        emptySelectionAllowed: false,
+                        style: SegmentedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          textStyle: const TextStyle(fontSize: 15),
+                        ),
+                        segments: const [
+                          ButtonSegment(
+                            value: 'expense',
+                            label: Text('Expense'),
+                          ),
+                          ButtonSegment(value: 'income', label: Text('Income')),
+                        ],
+                        selected: {type},
+                        onSelectionChanged: (newSelection) {
+                          setDialogState(() {
+                            type = newSelection.first;
+                          });
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    // Budget - only shown when relevant + better labeling
+                    if (type == 'expense') ...[
+                      Text(
+                        'Monthly Budget (optional)',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: budgetController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        decoration: InputDecoration(
+                          prefixText: '₹  ',
+                          labelText: 'Amount',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          hintText: 'e.g. 5000',
+                        ),
+                        inputFormatters: [
+                          // You can add currency formatter later if needed
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'You can set or change this later',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey[600],
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
+
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
-              actions: <Widget>[
+              actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              actions: [
                 TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.grey[700],
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                  ),
+                  onPressed: () => Navigator.pop(context),
                   child: const Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
                 ),
-                ElevatedButton(
-                  child: const Text('Save'),
+                const SizedBox(width: 8),
+                FilledButton(
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 28,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
-                      final String name = nameController.text;
+                      final String name = nameController.text.trim();
                       final String catType = type;
 
                       setState(() {
+                        final newCategory = Category(
+                          name: name,
+                          iconCode: Icons.monetization_on_rounded.codePoint,
+                          type: catType,
+                        );
+
                         if (catType == "expense") {
-                          _expenseCategories.add(
-                            Category(
-                              name: name,
-                              iconCode: Icons.monetization_on_rounded.codePoint,
-                              type: catType,
-                            ),
-                          );
+                          _expenseCategories.add(newCategory);
                           DatabaseHelper.instance.insertCategory(
-                            _expenseCategories.last.toMap(),
+                            newCategory.toMap(),
                           );
                         } else if (catType == "income") {
-                          _incomeCategories.add(
-                            Category(
-                              name: name,
-                              iconCode: Icons.monetization_on_rounded.codePoint,
-                              type: catType,
-                            ),
-                          );
+                          _incomeCategories.add(newCategory);
                           DatabaseHelper.instance.insertCategory(
-                            _incomeCategories.last.toMap(),
+                            newCategory.toMap(),
                           );
                         }
                       });
 
-                      Navigator.of(context).pop();
+                      Navigator.pop(context);
                     }
                   },
+                  child: const Text('Create'),
                 ),
               ],
             );
@@ -221,6 +323,124 @@ class _CategoriesState extends State<Categories> {
       },
     );
   }
+  // void _showAddCategoryDialog() {
+  //   final TextEditingController nameController = TextEditingController();
+  //   final TextEditingController budgetController = TextEditingController();
+  //   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  //   type = 'expense';
+
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return StatefulBuilder(
+  //         builder: (context, setDialogState) {
+  //           return AlertDialog(
+  //             title: const Text('Add New Category'),
+  //             content: Form(
+  //               key: formKey,
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: <Widget>[
+  //                   TextFormField(
+  //                     controller: nameController,
+  //                     decoration: const InputDecoration(
+  //                       labelText: 'Category Name',
+  //                     ),
+  //                     validator: (value) {
+  //                       if (value == null || value.isEmpty) {
+  //                         return 'Please enter a name.';
+  //                       }
+  //                       return null;
+  //                     },
+  //                   ),
+  //                   const SizedBox(height: 16),
+  //                   const Text('Type'),
+  //                   const SizedBox(height: 5),
+  //                   SegmentedButton<String>(
+  //                     segments: const <ButtonSegment<String>>[
+  //                       ButtonSegment(value: 'expense', label: Text('Expense')),
+  //                       ButtonSegment(value: 'income', label: Text('Income')),
+  //                     ],
+  //                     selected: {type},
+  //                     onSelectionChanged: (Set<String> newSelection) {
+  //                       setDialogState(() {
+  //                         type = newSelection.first;
+  //                       });
+  //                     },
+  //                   ),
+  //                   const SizedBox(height: 8),
+  //                   //const Text('Budget (Optional)'),
+  //                   if (type == 'expense') ...[
+  //                     TextField(
+  //                       controller: budgetController,
+  //                       keyboardType: TextInputType.numberWithOptions(
+  //                         decimal: true,
+  //                       ),
+  //                       decoration: const InputDecoration(
+  //                         labelText: 'Budget',
+  //                         prefixText: '₹ ',
+  //                         border: OutlineInputBorder(),
+  //                       ),
+  //                       style: const TextStyle(
+  //                         fontSize: 15,
+  //                         fontWeight: FontWeight.bold,
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ],
+  //               ),
+  //             ),
+  //             actions: <Widget>[
+  //               TextButton(
+  //                 child: const Text('Cancel'),
+  //                 onPressed: () {
+  //                   Navigator.of(context).pop();
+  //                 },
+  //               ),
+  //               ElevatedButton(
+  //                 child: const Text('Save'),
+  //                 onPressed: () {
+  //                   if (formKey.currentState!.validate()) {
+  //                     final String name = nameController.text;
+  //                     final String catType = type;
+
+  //                     setState(() {
+  //                       if (catType == "expense") {
+  //                         _expenseCategories.add(
+  //                           Category(
+  //                             name: name,
+  //                             iconCode: Icons.monetization_on_rounded.codePoint,
+  //                             type: catType,
+  //                           ),
+  //                         );
+  //                         DatabaseHelper.instance.insertCategory(
+  //                           _expenseCategories.last.toMap(),
+  //                         );
+  //                       } else if (catType == "income") {
+  //                         _incomeCategories.add(
+  //                           Category(
+  //                             name: name,
+  //                             iconCode: Icons.monetization_on_rounded.codePoint,
+  //                             type: catType,
+  //                           ),
+  //                         );
+  //                         DatabaseHelper.instance.insertCategory(
+  //                           _incomeCategories.last.toMap(),
+  //                         );
+  //                       }
+  //                     });
+
+  //                     Navigator.of(context).pop();
+  //                   }
+  //                 },
+  //               ),
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
   void _loadAccounts() async {
     try {
