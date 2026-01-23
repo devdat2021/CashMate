@@ -371,6 +371,33 @@ class DatabaseHelper {
     });
   }
 
+  Future<double> CatExpense(int categoryId, DateTime month) async {
+    final db = await instance.database;
+
+    final start = DateTime(month.year, month.month, 1).millisecondsSinceEpoch;
+    final end = DateTime(month.year, month.month + 1, 1).millisecondsSinceEpoch;
+
+    // 2. Run the Query
+    final result = await db.rawQuery(
+      '''
+      SELECT SUM(amount) as total 
+      FROM transactions 
+      WHERE category_id = ? 
+        AND transaction_type = 'expense'
+        AND date >= ? 
+        AND date < ?
+    ''',
+      [categoryId, start, end],
+    );
+
+    // 3. Extract the value (handle null if no transactions exist)
+    if (result.isNotEmpty && result.first['total'] != null) {
+      return result.first['total'] as double;
+    } else {
+      return 0.0;
+    }
+  }
+
   Future<void> deleteTransaction(int id) async {
     final db = await instance.database;
 
