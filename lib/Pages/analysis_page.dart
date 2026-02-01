@@ -1,9 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:budget/models/account.dart';
-// import 'package:budget/models/transaction.dart';
-// import 'package:budget/models/category.dart';
-// import 'package:budget/utils/database_helper.dart';
-
 import 'package:flutter/material.dart';
 import 'package:budget/utils/database_helper.dart';
 import 'package:intl/intl.dart';
@@ -79,10 +73,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
   Widget _buildPieChart() {
     if (_breakdown.isEmpty) {
       return const Center(
-        child: Text(
-          'No data available',
-          style: TextStyle(color: Colors.grey),
-        ),
+        child: Text('No data available', style: TextStyle(color: Colors.grey)),
       );
     }
 
@@ -119,8 +110,10 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 final index = entry.key;
                 final item = entry.value;
                 final amount = (item['total'] as num).toDouble();
-                final percentage = _totalAmount == 0 ? 0 : (amount / _totalAmount) * 100;
-                
+                final percentage = _totalAmount == 0
+                    ? 0
+                    : (amount / _totalAmount) * 100;
+
                 return PieChartSectionData(
                   color: colors[index % colors.length],
                   value: amount,
@@ -138,7 +131,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 25),
         // Legend
         Wrap(
           spacing: 16,
@@ -148,7 +141,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
             final index = entry.key;
             final item = entry.value;
             final name = item['name'] as String;
-            
+
             return Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -161,10 +154,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                   ),
                 ),
                 const SizedBox(width: 4),
-                Text(
-                  name,
-                  style: const TextStyle(fontSize: 12),
-                ),
+                Text(name, style: const TextStyle(fontSize: 12)),
               ],
             );
           }).toList(),
@@ -177,10 +167,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
   Widget _buildBarChart() {
     if (_monthlyTrends.isEmpty) {
       return const Center(
-        child: Text(
-          'No data available',
-          style: TextStyle(color: Colors.grey),
-        ),
+        child: Text('No data available', style: TextStyle(color: Colors.grey)),
       );
     }
 
@@ -191,17 +178,14 @@ class _AnalysisPageState extends State<AnalysisPage> {
       if (income > maxY) maxY = income;
       if (expense > maxY) maxY = expense;
     }
-    
+
     // Add 20% padding to max value
     maxY = maxY * 1.2;
     if (maxY == 0) maxY = 100;
 
     return Column(
       children: [
-        const Text(
-          'Monthly Income vs Expense',
-          style: _headingStyle,
-        ),
+        const Text('Monthly Income vs Expense', style: _headingStyle),
         const SizedBox(height: 16),
         SizedBox(
           height: 200,
@@ -213,7 +197,8 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 enabled: true,
                 touchTooltipData: BarTouchTooltipData(
                   getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                    final month = _monthlyTrends[group.x.toInt()]['month'] as DateTime;
+                    final month =
+                        _monthlyTrends[group.x.toInt()]['month'] as DateTime;
                     final monthName = DateFormat('MMM').format(month);
                     final type = rodIndex == 0 ? 'Income' : 'Expense';
                     return BarTooltipItem(
@@ -232,7 +217,8 @@ class _AnalysisPageState extends State<AnalysisPage> {
                       if (value.toInt() >= _monthlyTrends.length) {
                         return const Text('');
                       }
-                      final month = _monthlyTrends[value.toInt()]['month'] as DateTime;
+                      final month =
+                          _monthlyTrends[value.toInt()]['month'] as DateTime;
                       return Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
@@ -280,7 +266,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 final trend = entry.value;
                 final income = trend['income'] as double;
                 final expense = trend['expense'] as double;
-                
+
                 return BarChartGroupData(
                   x: index,
                   barRods: [
@@ -288,13 +274,17 @@ class _AnalysisPageState extends State<AnalysisPage> {
                       toY: income,
                       color: Colors.green,
                       width: 12,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(4),
+                      ),
                     ),
                     BarChartRodData(
                       toY: expense,
                       color: Colors.red,
                       width: 12,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(4),
+                      ),
                     ),
                   ],
                 );
@@ -379,8 +369,14 @@ class _AnalysisPageState extends State<AnalysisPage> {
                         // Toggle Button
                         SegmentedButton<String>(
                           segments: const [
-                            ButtonSegment(value: 'expense', label: Text('Expense')),
-                            ButtonSegment(value: 'income', label: Text('Income')),
+                            ButtonSegment(
+                              value: 'expense',
+                              label: Text('Expense'),
+                            ),
+                            ButtonSegment(
+                              value: 'income',
+                              label: Text('Income'),
+                            ),
                           ],
                           selected: {_type},
                           onSelectionChanged: (newSelection) {
@@ -395,7 +391,10 @@ class _AnalysisPageState extends State<AnalysisPage> {
                         // Big Total Amount
                         Text(
                           "Total $_type",
-                          style: const TextStyle(color: Colors.grey, fontSize: 14),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
                         ),
                         Text(
                           "₹${_totalAmount.toStringAsFixed(2)}",
@@ -424,7 +423,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                                 'Category Distribution',
                                 style: _headingStyle,
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 25),
                               _buildPieChart(),
                             ],
                           ),
@@ -450,10 +449,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Category Breakdown',
-                          style: _headingStyle,
-                        ),
+                        const Text('Category Breakdown', style: _headingStyle),
                         const SizedBox(height: 16),
                         _breakdown.isEmpty
                             ? Center(
@@ -468,7 +464,8 @@ class _AnalysisPageState extends State<AnalysisPage> {
                                 itemCount: _breakdown.length,
                                 itemBuilder: (context, index) {
                                   final item = _breakdown[index];
-                                  final amount = (item['total'] as num).toDouble();
+                                  final amount = (item['total'] as num)
+                                      .toDouble();
                                   final name = item['name'] as String;
                                   final iconCode = item['icon_code'] as int;
 
@@ -524,14 +521,17 @@ class _AnalysisPageState extends State<AnalysisPage> {
                                           children: [
                                             Expanded(
                                               child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(4),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
                                                 child: LinearProgressIndicator(
                                                   value: percentage,
                                                   minHeight: 8,
-                                                  backgroundColor: Colors.grey[200],
-                                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                                    color,
-                                                  ),
+                                                  backgroundColor:
+                                                      Colors.grey[200],
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                        Color
+                                                      >(color),
                                                 ),
                                               ),
                                             ),
