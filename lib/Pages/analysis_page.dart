@@ -345,7 +345,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
             Text(
               monthName,
               style: const TextStyle(
-                color: Colors.black,
+                color: Color.fromARGB(255, 30, 30, 30),
                 fontWeight: FontWeight.bold,
               ),
             ),

@@ -430,7 +430,9 @@ class DatabaseHelper {
   }
 
   // Get monthly totals for the last N months for bar chart display
-  Future<List<Map<String, dynamic>>> getMonthlyTrends(int numberOfMonths) async {
+  Future<List<Map<String, dynamic>>> getMonthlyTrends(
+    int numberOfMonths,
+  ) async {
     final db = await instance.database;
     final List<Map<String, dynamic>> results = [];
 
@@ -440,16 +442,20 @@ class DatabaseHelper {
       // Properly calculate target month by going back i months
       int targetYear = now.year;
       int targetMonth = now.month - i;
-      
+
       // Handle year boundary crossing
       while (targetMonth <= 0) {
         targetMonth += 12;
         targetYear -= 1;
       }
-      
+
       final targetDate = DateTime(targetYear, targetMonth, 1);
       final startOfMonth = targetDate.millisecondsSinceEpoch;
-      final endOfMonth = DateTime(targetYear, targetMonth + 1, 1).millisecondsSinceEpoch;
+      final endOfMonth = DateTime(
+        targetYear,
+        targetMonth + 1,
+        1,
+      ).millisecondsSinceEpoch;
 
       final result = await db.rawQuery(
         '''
@@ -471,5 +477,23 @@ class DatabaseHelper {
     }
 
     return results;
+  }
+
+  // Fetch ALL data for Export (Joins Categories and Accounts)
+  Future<List<Map<String, dynamic>>> getAllTransactionsForExport() async {
+    Database db = await instance.database;
+    return await db.rawQuery('''
+      SELECT 
+        t.date, 
+        t.amount, 
+        t.transaction_type, 
+        t.note,
+        c.name AS category_name, 
+        a.name AS account_name
+      FROM transactions t
+      LEFT JOIN categories c ON t.category_id = c.id
+      LEFT JOIN accounts a ON t.account_id = a.id
+      ORDER BY t.date DESC
+    ''');
   }
 }

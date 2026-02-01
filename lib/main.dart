@@ -6,6 +6,11 @@ import 'Pages/categories_page.dart';
 import 'Pages/transaction_page.dart';
 import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:io'; // For File operations
+import 'package:path_provider/path_provider.dart'; // To find temp folder
+import 'package:share_plus/share_plus.dart'; // To share the file
+import 'package:budget/utils/database_helper.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MaterialApp(home: BudgetApp()));
@@ -23,14 +28,131 @@ class _BudgetAppState extends State<BudgetApp> {
   // 0-Accounts, 1-Records, 2-Analysis, 3-Categories
   int currentIndex = 0;
   int _refreshKey = 0;
-  void _exportData() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Exporting data... (Coming Soon)")),
-    );
-    // Future Logic:
-    // 1. Fetch all transactions from DB
-    // 2. Convert to CSV string
-    // 3. Save to phone storage
+  // void _exportData() {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(content: Text("Exporting data... (Coming Soon)")),
+  //   );
+  //   // Future Logic:
+  //   // 1. Fetch all transactions from DB
+  //   // 2. Convert to CSV string
+  //   // 3. Save to phone storage
+  // }
+  // Future<void> _exportData() async {
+  //   try {
+  //     // 1. Fetch all data
+  //     final data = await DatabaseHelper.instance.getAllTransactionsForExport();
+
+  //     // 2. Create the CSV Header
+  //     String csvContent = "Date,Time,Type,Category,Amount,Account,Note\n";
+
+  //     // 3. Loop through data and create rows
+  //     for (var row in data) {
+  //       final date = DateTime.fromMillisecondsSinceEpoch(row['date']);
+  //       final dateStr = DateFormat('yyyy-MM-dd').format(date);
+  //       final timeStr = DateFormat('HH:mm').format(date);
+
+  //       // Sanitize data (remove commas from notes so CSV doesn't break)
+  //       final note = (row['note'] ?? '').toString().replaceAll(',', ' ');
+  //       final category = row['category_name'] ?? 'Uncategorized';
+  //       final account = row['account_name'] ?? 'Unknown';
+  //       final type = row['transaction_type'];
+  //       final amount = row['amount'];
+
+  //       // Add the row
+  //       csvContent += "$dateStr,$timeStr,$type,$category,$amount,$account,$note\n";
+  //     }
+
+  //     // 4. Save to a temporary file
+  //     final directory = await getTemporaryDirectory();
+  //     final path = "${directory.path}/CashMate_Export.csv";
+  //     final file = File(path);
+  //     await file.writeAsString(csvContent);
+
+  //     // 5. Share the file
+  //     await Share.shareXFiles(
+  //       [XFile(path)],
+  //       text: 'Here is my CashMate transaction data!',
+  //     );
+
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text("Error exporting data: $e")),
+  //     );
+  //   }
+  // }
+  Future<void> _exportData() async {
+    try {
+      // 1. Fetch all data
+      final List<Map<String, dynamic>> data = await DatabaseHelper.instance
+          .getAllTransactionsForExport();
+
+      final buffer = StringBuffer();
+
+      // 2. CSV Header
+      buffer.writeln("Date,Time,Type,Category,Amount,Account,Note");
+
+      // Helper to escape CSV fields safely
+      String csvEscape(dynamic value) {
+        if (value == null) return '';
+        final str = value.toString();
+        if (str.contains(',') || str.contains('"') || str.contains('\n')) {
+          return '"${str.replaceAll('"', '""')}"';
+        }
+        return str;
+      }
+
+      // 3. Create rows
+      for (final row in data) {
+        final dateMillis = row['date'] as int;
+        final date = DateTime.fromMillisecondsSinceEpoch(dateMillis);
+
+        final dateStr = DateFormat('yyyy-MM-dd').format(date);
+        final timeStr = DateFormat('HH:mm').format(date);
+
+        final type = csvEscape(row['transaction_type']);
+        final category = csvEscape(row['category_name'] ?? 'Uncategorized');
+        final account = csvEscape(row['account_name'] ?? 'Unknown');
+        final amount = row['amount']; // keep numeric
+        final note = csvEscape(row['note']);
+
+        buffer.writeln(
+          "$dateStr,$timeStr,$type,$category,$amount,$account,$note",
+        );
+      }
+
+      // 4. Save file
+      final directory = await getTemporaryDirectory();
+      final filePath = "${directory.path}/CashMate_Export.csv";
+      final file = File(filePath);
+
+      await file.writeAsString(buffer.toString());
+
+      // 5. Share (LATEST API)
+      // await SharePlus.instance.share(
+      //   [XFile(filePath)],
+      //   text: 'Here is my CashMate transaction data',
+      //   subject: 'CashMate Export',
+      // );
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(filePath)],
+          text: 'Here is my CashMate transaction data',
+          subject: 'CashMate Export',
+        ),
+      );
+    } catch (e, stack) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error exporting data"),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+      debugPrint("Export error: $e");
+      debugPrintStack(stackTrace: stack);
+    }
   }
 
   @override
@@ -71,6 +193,7 @@ class _BudgetAppState extends State<BudgetApp> {
             // ),
 
             // B. The Menu Options
+            SizedBox(height: 30),
             ListTile(
               leading: const Icon(Icons.file_download),
               title: const Text('Export Data (CSV)'),
@@ -81,15 +204,14 @@ class _BudgetAppState extends State<BudgetApp> {
             ),
 
             // Placeholder for future options
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                Navigator.pop(context);
-                // Future: Navigator.push(context, MaterialPageRoute(builder: (c) => SettingsPage()));
-              },
-            ),
-
+            // ListTile(
+            //   leading: const Icon(Icons.settings),
+            //   title: const Text('Settings'),
+            //   onTap: () {
+            //     Navigator.pop(context);
+            //     // Future: Navigator.push(context, MaterialPageRoute(builder: (c) => SettingsPage()));
+            //   },
+            // ),
             const Divider(), // Visual separator
 
             ListTile(
