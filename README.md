@@ -18,14 +18,42 @@ CashMate is a personal finance and budgeting application built with **Flutter**.
  | Home / Accounts | Records List | Analysis & Charts | Add Transaction |
 |:---:|:---:|:---:|:---:|
 | *(Add screenshot)* | *(Add screenshot)* | *(Add screenshot)* | *(Add screenshot)* | -->
-
+<!-- 
 ## Screenshots
 
 | ![Home](SS/Accounts.png) | ![Records](SS/Records.png) |
 
 | ![Analysis](SS/Analysis.png) | ![Transaction](SS/Transaction.png) |
 
-| ![Categories](SS/Categories.png)
+| ![Categories](SS/Categories.png) -->
+## Screenshots
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><b>Home / Accounts</b></td>
+      <td align="center"><b>Records List</b></td>
+    </tr>
+    <tr>
+      <td><img src="SS/Accounts.png" width="250" /></td>
+      <td><img src="SS/Records.png" width="250" /></td>
+    </tr>
+    <tr>
+      <td align="center"><b>Analysis & Charts</b></td>
+      <td align="center"><b>Add Transaction</b></td>
+    </tr>
+    <tr>
+      <td><img src="SS/Analysis.png" width="250" /></td>
+      <td><img src="SS/Transaction.png" width="250" /></td>
+    </tr>
+    <tr>
+      <td align="center" colspan="2"><b>Categories</b></td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center"><img src="SS/Categories.png" width="250" /></td>
+    </tr>
+  </table>
+</div>
 
 ## Tech Stack
 
