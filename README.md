@@ -12,12 +12,20 @@ CashMate is a personal finance and budgeting application built with **Flutter**.
 * **Category Management:** Organize transactions with custom categories and icons.
 * **Monthly Records:** View transaction history grouped by month.
 * **Local Storage:** All data is stored locally on the device using SQLite, ensuring privacy and offline access.
-
+* **Data Export:** Export your complete transaction history to CSV for external analysis.
 <!--## 📱 Screenshots
 
  | Home / Accounts | Records List | Analysis & Charts | Add Transaction |
 |:---:|:---:|:---:|:---:|
 | *(Add screenshot)* | *(Add screenshot)* | *(Add screenshot)* | *(Add screenshot)* | -->
+
+## Screenshots
+
+| ![Home](SS/Accounts.png) | ![Records](SS/Records.png) |
+
+| ![Analysis](SS/Analysis.png) | ![Transaction](SS/Transaction.png) |
+
+| ![Categories](SS/Categories.png)
 
 ## Tech Stack
 
@@ -74,6 +82,3 @@ lib/
 ## Contributing
 
 Contributions are welcome! Feel free to open an issue or submit a pull request.
-
----
-Developed with ❤️ using Flutter.
