@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'Pages/accounts_page.dart';
 import 'Pages/records_page.dart';
+import 'Pages/analysis_page.dart';
 import 'Pages/categories_page.dart';
 import 'Pages/transaction_page.dart';
 import 'package:flutter/gestures.dart';
@@ -38,9 +39,10 @@ class _BudgetAppState extends State<BudgetApp> {
     final List<Widget> _pages = [
       Accounts(key: ValueKey(_refreshKey)),
       Records(key: ValueKey(_refreshKey)),
-      const Center(
-        child: Text('Analysis Page', style: TextStyle(fontSize: 24)),
-      ),
+      const AnalysisPage(),
+      // const Center(
+      //   child: Text('Analysis Page', style: TextStyle(fontSize: 24)),
+      // ),
       const Categories(),
     ];
     return Scaffold(
