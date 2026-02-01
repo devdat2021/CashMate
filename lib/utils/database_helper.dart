@@ -437,9 +437,19 @@ class DatabaseHelper {
     final now = DateTime.now();
 
     for (int i = numberOfMonths - 1; i >= 0; i--) {
-      final targetDate = DateTime(now.year, now.month - i, 1);
-      final startOfMonth = DateTime(targetDate.year, targetDate.month, 1).millisecondsSinceEpoch;
-      final endOfMonth = DateTime(targetDate.year, targetDate.month + 1, 1).millisecondsSinceEpoch;
+      // Properly calculate target month by going back i months
+      int targetYear = now.year;
+      int targetMonth = now.month - i;
+      
+      // Handle year boundary crossing
+      while (targetMonth <= 0) {
+        targetMonth += 12;
+        targetYear -= 1;
+      }
+      
+      final targetDate = DateTime(targetYear, targetMonth, 1);
+      final startOfMonth = targetDate.millisecondsSinceEpoch;
+      final endOfMonth = DateTime(targetYear, targetMonth + 1, 1).millisecondsSinceEpoch;
 
       final result = await db.rawQuery(
         '''

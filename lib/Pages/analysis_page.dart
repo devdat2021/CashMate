@@ -24,6 +24,12 @@ class _AnalysisPageState extends State<AnalysisPage> {
   double _totalAmount = 0.0;
   bool _isLoading = true;
 
+  // Reusable text style for section headings
+  static const TextStyle _headingStyle = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+  );
+
   @override
   void initState() {
     super.initState();
@@ -194,10 +200,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
       children: [
         const Text(
           'Monthly Income vs Expense',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: _headingStyle,
         ),
         const SizedBox(height: 16),
         SizedBox(
@@ -245,10 +248,17 @@ class _AnalysisPageState extends State<AnalysisPage> {
                     showTitles: true,
                     reservedSize: 40,
                     getTitlesWidget: (value, meta) {
-                      return Text(
-                        '₹${(value / 1000).toStringAsFixed(0)}k',
-                        style: const TextStyle(fontSize: 10),
-                      );
+                      if (value >= 1000) {
+                        return Text(
+                          '₹${(value / 1000).toStringAsFixed(0)}k',
+                          style: const TextStyle(fontSize: 10),
+                        );
+                      } else {
+                        return Text(
+                          '₹${value.toStringAsFixed(0)}',
+                          style: const TextStyle(fontSize: 10),
+                        );
+                      }
                     },
                   ),
                 ),
@@ -410,12 +420,9 @@ class _AnalysisPageState extends State<AnalysisPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              const Text(
                                 'Category Distribution',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: _headingStyle,
                               ),
                               const SizedBox(height: 16),
                               _buildPieChart(),
@@ -445,10 +452,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                       children: [
                         const Text(
                           'Category Breakdown',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: _headingStyle,
                         ),
                         const SizedBox(height: 16),
                         _breakdown.isEmpty
