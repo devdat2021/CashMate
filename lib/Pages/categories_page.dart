@@ -372,7 +372,6 @@ class _CategoriesState extends State<Categories> {
                       },
                     ),
                     const SizedBox(height: 10),
-                    //const Text('Budget (Optional)'),
                     if (type == 'expense') ...[
                       Text(
                         'Monthly Budget (optional)',
@@ -383,7 +382,7 @@ class _CategoriesState extends State<Categories> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      TextField(
+                      TextFormField(
                         controller: budgetController,
                         keyboardType: TextInputType.numberWithOptions(
                           decimal: true,
@@ -412,6 +411,21 @@ class _CategoriesState extends State<Categories> {
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
+                        validator: (value) {
+                          if (type == 'expense') {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a budget amount.';
+                            }
+                            final parsed = double.tryParse(value);
+                            if (parsed == null) {
+                              return 'Please enter a valid number.';
+                            }
+                            if (parsed < 0) {
+                              return 'Budget cannot be negative.';
+                            }
+                          }
+                          return null;
+                        },
                       ),
                     ],
                   ],
@@ -433,12 +447,13 @@ class _CategoriesState extends State<Categories> {
 
                       setState(() {
                         if (catType == "expense") {
+                          final double budget = double.tryParse(budgetController.text) ?? 0.0;
                           _expenseCategories.add(
                             Category(
                               name: name,
                               iconCode: Icons.monetization_on_rounded.codePoint,
                               type: catType,
-                              budget: double.parse(budgetController.text),
+                              budget: budget,
                             ),
                           );
                           DatabaseHelper.instance.insertCategory(

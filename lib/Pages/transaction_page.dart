@@ -167,11 +167,71 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
+          : (_accounts.isEmpty || _categories.isEmpty)
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      size: 60,
+                      color: Colors.orange,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      _accounts.isEmpty && _categories.isEmpty
+                          ? 'No accounts or categories found.'
+                          : _accounts.isEmpty
+                          ? 'No accounts found.'
+                          : 'No categories found for this type.',
+                      style: const TextStyle(fontSize: 18, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.add_circle_outline),
+                      label: Text(
+                        _accounts.isEmpty
+                            ? 'Add Account'
+                            : _categories.isEmpty
+                            ? 'Add Category'
+                            : 'Bug Issue!',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(
+                          255,
+                          231,
+                          244,
+                          174,
+                        ),
+                        foregroundColor: Colors.black,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              _accounts.isEmpty
+                                  ? 'Please add an account from the Accounts tab'
+                                  : 'Please add a category from the Categories tab',
+                            ),
+                            duration: const Duration(seconds: 3),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  // 1. Type Toggle (Expense / Income)
                   SegmentedButton<String>(
                     segments: const <ButtonSegment<String>>[
                       ButtonSegment(value: 'expense', label: Text('Expense')),
@@ -187,7 +247,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // 2. Amount Input
+                  //Amount Input
                   TextField(
                     controller: _amountController,
                     keyboardType: TextInputType.numberWithOptions(

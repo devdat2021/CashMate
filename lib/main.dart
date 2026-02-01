@@ -28,58 +28,7 @@ class _BudgetAppState extends State<BudgetApp> {
   // 0-Accounts, 1-Records, 2-Analysis, 3-Categories
   int currentIndex = 0;
   int _refreshKey = 0;
-  // void _exportData() {
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     const SnackBar(content: Text("Exporting data... (Coming Soon)")),
-  //   );
-  //   // Future Logic:
-  //   // 1. Fetch all transactions from DB
-  //   // 2. Convert to CSV string
-  //   // 3. Save to phone storage
-  // }
-  // Future<void> _exportData() async {
-  //   try {
-  //     // 1. Fetch all data
-  //     final data = await DatabaseHelper.instance.getAllTransactionsForExport();
 
-  //     // 2. Create the CSV Header
-  //     String csvContent = "Date,Time,Type,Category,Amount,Account,Note\n";
-
-  //     // 3. Loop through data and create rows
-  //     for (var row in data) {
-  //       final date = DateTime.fromMillisecondsSinceEpoch(row['date']);
-  //       final dateStr = DateFormat('yyyy-MM-dd').format(date);
-  //       final timeStr = DateFormat('HH:mm').format(date);
-
-  //       // Sanitize data (remove commas from notes so CSV doesn't break)
-  //       final note = (row['note'] ?? '').toString().replaceAll(',', ' ');
-  //       final category = row['category_name'] ?? 'Uncategorized';
-  //       final account = row['account_name'] ?? 'Unknown';
-  //       final type = row['transaction_type'];
-  //       final amount = row['amount'];
-
-  //       // Add the row
-  //       csvContent += "$dateStr,$timeStr,$type,$category,$amount,$account,$note\n";
-  //     }
-
-  //     // 4. Save to a temporary file
-  //     final directory = await getTemporaryDirectory();
-  //     final path = "${directory.path}/CashMate_Export.csv";
-  //     final file = File(path);
-  //     await file.writeAsString(csvContent);
-
-  //     // 5. Share the file
-  //     await Share.shareXFiles(
-  //       [XFile(path)],
-  //       text: 'Here is my CashMate transaction data!',
-  //     );
-
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text("Error exporting data: $e")),
-  //     );
-  //   }
-  // }
   Future<void> _exportData() async {
     try {
       // 1. Fetch all data
@@ -161,7 +110,7 @@ class _BudgetAppState extends State<BudgetApp> {
     final List<Widget> _pages = [
       Accounts(key: ValueKey(_refreshKey)),
       Records(key: ValueKey(_refreshKey)),
-      const AnalysisPage(),
+      AnalysisPage(key: ValueKey(_refreshKey)),
       // const Center(
       //   child: Text('Analysis Page', style: TextStyle(fontSize: 24)),
       // ),
