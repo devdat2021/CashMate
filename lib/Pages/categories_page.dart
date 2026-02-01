@@ -492,7 +492,7 @@ class _CategoriesState extends State<Categories> {
         _isLoading = false;
       });
     } catch (e) {
-      print("Database Loading Error: $e"); //for debugging purpose :)
+      //print("Database Loading Error: $e"); //for debugging purpose :)
       setState(() {
         _isLoading = false;
       });

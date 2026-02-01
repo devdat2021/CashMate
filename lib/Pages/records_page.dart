@@ -100,7 +100,7 @@ class RecordsState extends State<Records> {
       });
     } catch (e) {
       // Crucial: Print any database error to the console!
-      print("Database Loading Error: $e");
+      //print("Database Loading Error: $e");
       setState(() {
         _isLoading = false; // Stop loading even if there's an error
       });
@@ -151,7 +151,7 @@ class RecordsState extends State<Records> {
               children: [
                 CircleAvatar(
                   radius: 30,
-                  backgroundColor: color.withOpacity(0.1),
+                  backgroundColor: color.withValues(alpha: 0.1),
                   child: Icon(t.iconWidget.icon, color: color, size: 30),
                 ),
                 const SizedBox(height: 10),

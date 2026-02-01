@@ -484,7 +484,9 @@ class _AnalysisPageState extends State<AnalysisPage> {
                                             Container(
                                               padding: const EdgeInsets.all(8),
                                               decoration: BoxDecoration(
-                                                color: color.withOpacity(0.1),
+                                                color: color.withValues(
+                                                  alpha: 0.5,
+                                                ),
                                                 shape: BoxShape.circle,
                                               ),
                                               child: Icon(

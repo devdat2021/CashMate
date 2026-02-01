@@ -73,7 +73,7 @@ class _AccountsState extends State<Accounts> {
       });
     } catch (e) {
       // Crucial: Print any database error to the console!
-      print("Database Loading Error: $e");
+      //print("Database Loading Error: $e");
       setState(() {
         _isLoading = false; // Stop loading even if there's an error
       });
