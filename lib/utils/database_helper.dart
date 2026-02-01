@@ -428,4 +428,38 @@ class DatabaseHelper {
       }
     });
   }
+
+  // Get monthly totals for the last N months for bar chart display
+  Future<List<Map<String, dynamic>>> getMonthlyTrends(int numberOfMonths) async {
+    final db = await instance.database;
+    final List<Map<String, dynamic>> results = [];
+
+    final now = DateTime.now();
+
+    for (int i = numberOfMonths - 1; i >= 0; i--) {
+      final targetDate = DateTime(now.year, now.month - i, 1);
+      final startOfMonth = DateTime(targetDate.year, targetDate.month, 1).millisecondsSinceEpoch;
+      final endOfMonth = DateTime(targetDate.year, targetDate.month + 1, 1).millisecondsSinceEpoch;
+
+      final result = await db.rawQuery(
+        '''
+        SELECT 
+          SUM(CASE WHEN transaction_type = 'income' THEN amount ELSE 0 END) as income,
+          SUM(CASE WHEN transaction_type = 'expense' THEN amount ELSE 0 END) as expense
+        FROM transactions
+        WHERE date >= ? AND date < ?
+      ''',
+        [startOfMonth, endOfMonth],
+      );
+
+      final row = result.first;
+      results.add({
+        'month': targetDate,
+        'income': (row['income'] as num?)?.toDouble() ?? 0.0,
+        'expense': (row['expense'] as num?)?.toDouble() ?? 0.0,
+      });
+    }
+
+    return results;
+  }
 }
