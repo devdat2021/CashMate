@@ -359,6 +359,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 100),
               child: Column(
                 children: [
                   // 2. TYPE TOGGLE & TOTAL
@@ -379,6 +380,13 @@ class _AnalysisPageState extends State<AnalysisPage> {
                             ),
                           ],
                           selected: {_type},
+                          style: SegmentedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            selectedBackgroundColor: const Color(0xFF0F172A), // Slate 900
+                            foregroundColor: const Color(0xFF0F172A),
+                            selectedForegroundColor: Colors.white,
+                            side: BorderSide(color: Colors.grey.shade300),
+                          ),
                           onSelectionChanged: (newSelection) {
                             setState(() {
                               _type = newSelection.first;
@@ -414,6 +422,11 @@ class _AnalysisPageState extends State<AnalysisPage> {
                       padding: const EdgeInsets.all(16.0),
                       child: Card(
                         elevation: 2,
+                        color: Colors.white,
+                        shadowColor: Colors.black.withOpacity(0.05),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
@@ -436,6 +449,11 @@ class _AnalysisPageState extends State<AnalysisPage> {
                     padding: const EdgeInsets.all(16.0),
                     child: Card(
                       elevation: 2,
+                      color: Colors.white,
+                      shadowColor: Colors.black.withOpacity(0.05),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: _buildBarChart(),

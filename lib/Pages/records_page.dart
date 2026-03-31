@@ -19,10 +19,16 @@ class Transaction_card extends StatelessWidget {
     final color = isExpense ? Colors.red : Colors.green;
     final formattedDate = DateFormat('MMM d, h:mm a').format(transaction.date);
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      elevation: 2,
+      color: Colors.white,
+      shadowColor: Colors.black.withOpacity(0.05),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: ListTile(
           leading: CircleAvatar(
             backgroundColor: color.withValues(
@@ -245,10 +251,11 @@ class RecordsState extends State<Records> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 62, 71, 72),
+                      backgroundColor: const Color(0xFF0F172A), // Slate 900
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(12),
                       ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     onPressed: () => Navigator.pop(ctx),
                     child: const Text(
@@ -376,13 +383,11 @@ class RecordsState extends State<Records> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
           child: Card(
-            elevation: 3.0,
+            elevation: 2,
+            color: Colors.white,
+            shadowColor: Colors.black.withOpacity(0.05),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              side: const BorderSide(
-                color: Color.fromARGB(255, 247, 236, 139),
-                width: 1.5,
-              ),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -488,6 +493,7 @@ class RecordsState extends State<Records> {
               : transactions.isEmpty
               ? const Center(child: Text("No records for this month"))
               : ListView.builder(
+                  padding: const EdgeInsets.only(bottom: 100),
                   itemCount: transactions.length,
                   itemBuilder: (context, index) {
                     return Transaction_card(

@@ -13,7 +13,28 @@ import 'package:budget/utils/database_helper.dart';
 import 'package:intl/intl.dart';
 
 void main() {
-  runApp(const MaterialApp(home: BudgetApp()));
+  runApp(
+    MaterialApp(
+      theme: ThemeData(
+        useMaterial3: true,
+        scaffoldBackgroundColor: Colors.grey[50], // Light crisp background
+        primaryColor: const Color(0xFF0F172A), // Slate 900
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF0F172A),
+          foregroundColor: Colors.white,
+          elevation: 0,
+          centerTitle: true,
+        ),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0F172A),
+          primary: const Color(0xFF0F172A),
+          secondary: const Color(0xFF10B981), // Emerald
+        ),
+        fontFamily: 'Roboto', // Modern system font look fallback
+      ),
+      home: const BudgetApp(),
+    ),
+  );
 }
 
 //Main state
@@ -171,7 +192,7 @@ class _BudgetAppState extends State<BudgetApp> {
                 showAboutDialog(
                   context: context,
                   applicationName: "CashMate",
-                  applicationVersion: "1.0.0",
+                  applicationVersion: "1.2.1",
                   children: [
                     Text.rich(
                       TextSpan(
@@ -224,16 +245,10 @@ class _BudgetAppState extends State<BudgetApp> {
       appBar: AppBar(
         title: Image.asset(
           'assets/Topbar_logo.png',
-          height: 40, // Adjust height to fit
+          height: 40,
           fit: BoxFit.contain,
         ),
-        backgroundColor: Color.fromARGB(255, 92, 108, 110),
         elevation: 0,
-        centerTitle: true,
-
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
-        ),
       ),
       body: _pages[currentIndex],
       floatingActionButton: FloatingActionButton(
@@ -249,49 +264,60 @@ class _BudgetAppState extends State<BudgetApp> {
             });
           }
         },
-        backgroundColor: Color.fromARGB(255, 139, 156, 158),
-
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(
-            color: Color.fromARGB(255, 247, 236, 139),
-            width: 1.0,
+        backgroundColor: const Color(0xFF10B981), // Emerald 500
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: const Icon(Icons.add, color: Colors.white, size: 28),
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          currentIndex: currentIndex,
+          onTap: (index) {
+            setState(() {
+              currentIndex = index;
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_balance_wallet_rounded),
+              label: 'Accounts',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.list_alt),
+              label: 'Records',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.pie_chart),
+              label: 'Analysis',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.category),
+              label: 'Categories',
+            ),
+          ],
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: const Color(0xFF0F172A), // Slate 900
+          unselectedItemColor: Colors.grey[400],
+          selectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.normal,
+            fontSize: 12,
           ),
         ),
-        child: const Icon(Icons.add, color: Color.fromARGB(255, 249, 206, 89)),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color.fromARGB(255, 92, 108, 110),
-
-        //currently selected tab
-        currentIndex: currentIndex,
-
-        onTap: (index) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
-
-        //items/tabs
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet_rounded),
-            label: 'Accounts',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'Records'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.pie_chart),
-            label: 'Analysis',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.category),
-            label: 'Categories',
-          ),
-        ],
-        type: BottomNavigationBarType.fixed,
-
-        selectedItemColor: const Color.fromARGB(255, 249, 206, 89),
-        unselectedItemColor: const Color.fromARGB(255, 197, 183, 144),
       ),
     );
   }

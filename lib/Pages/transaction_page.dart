@@ -163,7 +163,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Transaction'),
-        backgroundColor: isExpense ? Colors.redAccent : Colors.green,
+        backgroundColor: isExpense ? const Color(0xFFF43F5E) : const Color(0xFF10B981),
+        elevation: 0,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -238,6 +239,13 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       ButtonSegment(value: 'income', label: Text('Income')),
                     ],
                     selected: {_transactionType},
+                    style: SegmentedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      selectedBackgroundColor: const Color(0xFF0F172A), // Slate 900
+                      foregroundColor: const Color(0xFF0F172A),
+                      selectedForegroundColor: Colors.white,
+                      side: BorderSide(color: Colors.grey.shade300),
+                    ),
                     onSelectionChanged: (Set<String> newSelection) {
                       setState(() {
                         _transactionType = newSelection.first;
@@ -253,10 +261,10 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                     keyboardType: TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Amount',
                       prefixText: '₹ ',
-                      border: OutlineInputBorder(),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     style: const TextStyle(
                       fontSize: 24,
@@ -282,9 +290,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   //Account Dropdown
                   DropdownButtonFormField<Account>(
                     value: _selectedAccount,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Account',
-                      border: OutlineInputBorder(),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     items: _accounts.map((Account account) {
                       return DropdownMenuItem<Account>(
@@ -303,9 +311,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   //Category Dropdown
                   DropdownButtonFormField<Category>(
                     value: _selectedCategory,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Category',
-                      border: OutlineInputBorder(),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     items: _categories.map((Category category) {
                       return DropdownMenuItem<Category>(
@@ -335,9 +343,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   // 6. Note Input
                   TextField(
                     controller: _noteController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Note (Optional)',
-                      border: OutlineInputBorder(),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -349,9 +357,12 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: isExpense
-                            ? Colors.redAccent
-                            : Colors.green,
+                            ? const Color(0xFFF43F5E)
+                            : const Color(0xFF10B981),
                         foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       onPressed: _saveTransaction,
                       child: const Text(

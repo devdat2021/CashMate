@@ -20,14 +20,13 @@ class Category_card extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 2,
+      color: Colors.white,
+      shadowColor: Colors.black.withOpacity(0.05),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(
-          color: Color.fromARGB(255, 247, 236, 139),
-          width: 1.5,
-        ),
+        borderRadius: BorderRadius.circular(16),
       ),
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: ListTile(
         onLongPress: onLongPress,
         leading: cat.iconWidget,
@@ -193,20 +192,11 @@ class _CategoriesState extends State<Categories> {
                         ButtonSegment(value: 'income', label: Text('Income')),
                       ],
                       style: SegmentedButton.styleFrom(
-                        backgroundColor: Colors.grey,
-                        selectedBackgroundColor: Color.fromARGB(
-                          255,
-                          247,
-                          236,
-                          139,
-                        ),
-                        foregroundColor: Colors.black,
-                        selectedForegroundColor: const Color.fromARGB(
-                          255,
-                          38,
-                          36,
-                          36,
-                        ),
+                        backgroundColor: Colors.white,
+                        selectedBackgroundColor: const Color(0xFF0F172A), // Slate 900
+                        foregroundColor: const Color(0xFF0F172A),
+                        selectedForegroundColor: Colors.white,
+                        side: BorderSide(color: Colors.grey.shade300),
                       ),
                       selected: {type},
                       onSelectionChanged: (Set<String> newSelection) {
@@ -349,20 +339,11 @@ class _CategoriesState extends State<Categories> {
                         ButtonSegment(value: 'income', label: Text('Income')),
                       ],
                       style: SegmentedButton.styleFrom(
-                        backgroundColor: Colors.grey, // Unselected background
-                        selectedBackgroundColor: Color.fromARGB(
-                          255,
-                          247,
-                          236,
-                          139,
-                        ), // Selected background
-                        foregroundColor: Colors.black, // Unselected text/icon
-                        selectedForegroundColor: const Color.fromARGB(
-                          255,
-                          38,
-                          36,
-                          36,
-                        ), // Selected text/icon
+                        backgroundColor: Colors.white,
+                        selectedBackgroundColor: const Color(0xFF0F172A), // Slate 900
+                        foregroundColor: const Color(0xFF0F172A),
+                        selectedForegroundColor: Colors.white,
+                        side: BorderSide(color: Colors.grey.shade300),
                       ),
                       selected: {type},
                       onSelectionChanged: (Set<String> newSelection) {
@@ -542,11 +523,12 @@ class _CategoriesState extends State<Categories> {
                   'Add Category',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    color: Color.fromARGB(255, 92, 92, 92),
+                    color: Colors.white,
                   ),
                 ),
-                icon: const Icon(Icons.add_circle_outline),
-                backgroundColor: const Color.fromARGB(255, 231, 244, 174),
+                icon: const Icon(Icons.add_circle_outline, color: Colors.white),
+                backgroundColor: const Color(0xFF10B981), // Emerald
+                elevation: 4,
               ),
             ),
             const SizedBox(height: 20),
@@ -620,14 +602,15 @@ class _CategoriesState extends State<Categories> {
                 'Add Category',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: Color.fromARGB(255, 92, 92, 92),
+                  color: Colors.white,
                 ),
               ),
-              icon: const Icon(Icons.add_circle_outline),
-              backgroundColor: const Color.fromARGB(255, 231, 244, 174),
+              icon: const Icon(Icons.add_circle_outline, color: Colors.white),
+              backgroundColor: const Color(0xFF10B981), // Emerald
+              elevation: 4,
             ),
           ),
-          const SizedBox(height: 40), // Extra bottom padding for safe scrolling
+          const SizedBox(height: 100), // Extra bottom padding for safe scrolling
         ],
       ),
     );

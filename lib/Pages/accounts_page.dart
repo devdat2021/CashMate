@@ -14,21 +14,27 @@ class AccountCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 2,
+      color: Colors.white,
+      shadowColor: Colors.black.withOpacity(0.05),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(
-          color: Color.fromARGB(255, 247, 236, 139),
-          width: 1.5,
-        ),
+        borderRadius: BorderRadius.circular(16),
       ),
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         onLongPress: onLongPress,
-        leading: account.iconWidget,
-        title: Text(account.name, style: const TextStyle(fontSize: 18)),
+        leading: CircleAvatar(
+          backgroundColor: const Color(0xFF0F172A).withOpacity(0.05),
+          child: account.iconWidget,
+        ),
+        title: Text(
+          account.name,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF0F172A)),
+        ),
         trailing: Text(
           '₹${account.balance.toStringAsFixed(2)}',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF10B981)),
         ),
       ),
     );
@@ -344,11 +350,12 @@ class _AccountsState extends State<Accounts> {
                   'Add Account',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    color: Color.fromARGB(255, 92, 92, 92),
+                    color: Colors.white,
                   ),
                 ),
-                icon: const Icon(Icons.add_circle_outline),
-                backgroundColor: const Color.fromARGB(255, 231, 244, 174),
+                icon: const Icon(Icons.add_circle_outline, color: Colors.white),
+                backgroundColor: const Color(0xFF10B981),
+                elevation: 4,
               ),
             ),
             const SizedBox(height: 20),
@@ -361,40 +368,81 @@ class _AccountsState extends State<Accounts> {
           CrossAxisAlignment.stretch, // Makes cards span the width
       children: [
         // Inside the Column's children:
-        Card(
-          color: const Color.fromARGB(255, 246, 252, 199),
+        Container(
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF0F172A).withOpacity(0.3),
+                blurRadius: 15,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(24.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Total Balance
-                const Text('Total Net Worth', style: TextStyle(fontSize: 16)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total Net Worth',
+                      style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.7)),
+                    ),
+                    Icon(Icons.account_balance_wallet, color: Colors.white.withOpacity(0.5)),
+                  ],
+                ),
+                const SizedBox(height: 8),
                 Text(
                   '₹${_balance().toStringAsFixed(2)}',
-                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
-
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // 1. Expense Widget
                     Expanded(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Total Expense',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black54,
-                            ),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF43F5E).withOpacity(0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.arrow_downward, color: Color(0xFFF43F5E), size: 14),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Total Expense',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
+                          const SizedBox(height: 4),
                           Text(
                             '₹${_totals['expense']}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.red,
+                              color: Colors.white,
                             ),
                           ),
                         ],
@@ -404,20 +452,36 @@ class _AccountsState extends State<Accounts> {
                     // 2. Income Widget
                     Expanded(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Total Income',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color.fromARGB(200, 58, 58, 58),
-                            ),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF10B981).withOpacity(0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.arrow_upward, color: Color(0xFF10B981), size: 14),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Total Income',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
+                          const SizedBox(height: 4),
                           Text(
                             '₹${_totals['income']}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.green,
+                              color: Colors.white,
                             ),
                           ),
                         ],
@@ -458,14 +522,15 @@ class _AccountsState extends State<Accounts> {
                     'Add Account',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: Color.fromARGB(255, 92, 92, 92),
+                      color: Colors.white,
                     ),
                   ),
-                  icon: const Icon(Icons.add_circle_outline),
-                  backgroundColor: const Color.fromARGB(255, 231, 244, 174),
+                  icon: const Icon(Icons.add_circle_outline, color: Colors.white),
+                  backgroundColor: const Color(0xFF10B981), // Emerald
+                  elevation: 4,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 100),
             ],
           ),
         ),
